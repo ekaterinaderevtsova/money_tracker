@@ -1,0 +1,41 @@
+version: "3.9"
+
+services:
+  app:
+    container_name: spendingsbackend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongodb
+    networks:
+      - app-network
+    environment:
+      SERVER_PORT: 8000
+      MONGODB_URI: mongodb://mongodb:27017
+      MONGODB_USERNAME: ""
+      MONGODB_PASSWORD: ""
+    volumes:
+      - .:/app
+
+  mongodb:
+    image: mongo:4.4-bionic
+    container_name: mongodb
+    ports:
+      - "27018:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=db
+      - MONGO_INITDB_ROOT_PASSWORD=password
+      - MONGODB_DATABASE=spendings
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - app-network
+
+volumes:
+  mongo-data:
+
+networks:
+  app-network:
