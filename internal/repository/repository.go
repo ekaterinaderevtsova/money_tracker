@@ -1,13 +1,13 @@
 package repository
 
-import "go.mongodb.org/mongo-driver/mongo"
+import "github.com/jackc/pgx/v5/pgxpool"
 
 type Repository struct {
 	SpendingRepository *SpendingRepository
 }
 
-func NewRepository(db *mongo.Database) *Repository {
+func NewRepository(pool *pgxpool.Pool) *Repository {
 	return &Repository{
-		SpendingRepository: NewSpendingRepository(db),
+		SpendingRepository: NewSpendingRepository(pool),
 	}
 }

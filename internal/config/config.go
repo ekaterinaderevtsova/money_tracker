@@ -8,11 +8,13 @@ import (
 )
 
 type Config struct {
+	DBSource         string `env:"DB_SOURCE,required"`
 	TelegramBotToken string `env:"TELEGRAM_BOT_TOKEN,required"`
-	MongoURI         string `env:"MONGODB_URI,required"`
-	MongoDatabase    string `env:"MONGODB_DATABASE,required"`
-	MongoUsername    string `env:"MONGODB_USER,required"`
-	MongoPassword    string `env:"MONGODB_PASS,required"`
+	//	MongoURI         string `env:"MONGODB_URI,required"`
+	//
+	// MongoDatabase    string `env:"MONGODB_DATABASE,required"`
+	// MongoUsername    string `env:"MONGODB_USER,required"`
+	// MongoPassword    string `env:"MONGODB_PASS,required"`
 }
 
 func NewConfig() (*Config, error) {

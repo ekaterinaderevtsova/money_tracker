@@ -9,33 +9,26 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - mongodb
+      - db
     networks:
       - app-network
-    environment:
-      SERVER_PORT: 8000
-      MONGODB_URI: mongodb://mongodb:27017
-      MONGODB_USERNAME: ""
-      MONGODB_PASSWORD: ""
     volumes:
       - .:/app
 
-  mongodb:
-    image: mongo:4.4-bionic
-    container_name: mongodb
-    ports:
-      - "27018:27017"
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=db
-      - MONGO_INITDB_ROOT_PASSWORD=password
-      - MONGODB_DATABASE=spendings
+  db:
+    image: postgres:17.2-alpine3.20
+    container_name: spendings_db
     volumes:
-      - mongo-data:/data/db
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
     networks:
       - app-network
 
 volumes:
-  mongo-data:
+  postgres_data:
 
 networks:
   app-network:

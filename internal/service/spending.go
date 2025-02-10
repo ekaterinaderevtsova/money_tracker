@@ -8,7 +8,7 @@ import (
 
 type ISpendingRepository interface {
 	AddSpending(ctx context.Context, payload *domain.AddSpending) error
-	GetAllSpendings(ctx context.Context) ([]domain.AddSpending, error)
+	//	GetAllSpendings(ctx context.Context) ([]domain.AddSpending, error)
 	GetDaySpendings(ctx context.Context, date time.Time) (int32, error)
 	GetWeekSpendings(ctx context.Context, date time.Time) (*domain.WeeklySpendings, error)
 	GetMonthSpendings(ctx context.Context, date time.Time) ([]domain.WeekSpending, error)

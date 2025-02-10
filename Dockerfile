@@ -9,4 +9,5 @@ FROM alpine:3.20
 WORKDIR /root/
 COPY --from=builder /app/main .
 COPY .env .env
+COPY internal/db/migrations ./internal/db/migrations
 CMD ["./main"]
