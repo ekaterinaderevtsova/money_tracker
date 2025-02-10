@@ -4,6 +4,7 @@ import (
 	"cmd/main.go/internal/domain"
 	"context"
 	"fmt"
+	"sort"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -101,16 +102,22 @@ func (sr *SpendingRepository) GetDaySpendings(ctx context.Context, date time.Tim
 
 func (sr *SpendingRepository) GetWeekSpendings(ctx context.Context, date time.Time) (*domain.WeeklySpendings, error) {
 	date = date.UTC()
-	startOfWeek := date.AddDate(0, 0, -int(date.Weekday()))
-	startOfWeek = startOfWeek.Truncate(24 * time.Hour)
-	endOfWeek := startOfWeek.AddDate(0, 0, 7)
+	today := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, time.UTC)
+
+	startOfWeek := today.AddDate(0, 0, -int(today.Weekday()))
+
+	endOfWeek := time.Date(
+		startOfWeek.Year(), startOfWeek.Month(), startOfWeek.Day()+6,
+		23, 59, 59, 999000000,
+		time.UTC,
+	)
 
 	pipeline := []bson.M{
 		{
 			"$match": bson.M{
 				"date": bson.M{
 					"$gte": startOfWeek,
-					"$lt":  endOfWeek,
+					"$lte": endOfWeek,
 				},
 			},
 		},
@@ -169,4 +176,108 @@ func calculateTotal(days map[string]int32) int32 {
 		total += dayTotal
 	}
 	return total
+}
+
+func (sr *SpendingRepository) GetMonthSpendings(ctx context.Context, date time.Time) ([]domain.WeekSpending, error) {
+	date = date.UTC()
+	today := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, time.UTC)
+	startOfMonth := today.AddDate(0, 0, -int(today.Day())+1)
+	endOfMonth := time.Date(
+		startOfMonth.Year(), startOfMonth.Month(), getMonthDuration(startOfMonth.Month(), startOfMonth.Year()),
+		23, 59, 59, 999000000, // 999000000 nanoseconds = 999 milliseconds
+		time.UTC,
+	)
+	fmt.Println(startOfMonth, endOfMonth)
+
+	pipeline := []bson.M{
+		{
+			"$match": bson.M{
+				"date": bson.M{
+					"$gte": startOfMonth,
+					"$lte": endOfMonth,
+				},
+			},
+		},
+		// Change grouping to week
+		{
+			"$group": bson.M{
+				"_id": bson.M{
+					"$dateToString": bson.M{
+						"format": "%Y-%m-%d",
+						"date":   "$date",
+					},
+				},
+				"total": bson.M{
+					"$sum": "$sum",
+				},
+			},
+		},
+		{
+			"$sort": bson.M{
+				"_id": 1,
+			},
+		},
+	}
+
+	cursor, err := sr.db.Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, fmt.Errorf("failed to run aggregation: %w", err)
+	}
+	defer cursor.Close(ctx)
+
+	weeklySpendingsMap := make(map[int]int32)
+
+	var result struct {
+		ID    string `bson:"_id"`
+		Total int32  `bson:"total"`
+	}
+
+	for cursor.Next(ctx) {
+		if err := cursor.Decode(&result); err != nil {
+			return nil, fmt.Errorf("failed to decode result: %w", err)
+		}
+
+		// Parse the date from result.ID (format: "YYYY-MM-DD")
+		spendingDate, err := time.Parse("2006-01-02", result.ID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse date: %w", err)
+		}
+
+		// Calculate week number based on the first day of the month
+		firstDay := time.Date(spendingDate.Year(), spendingDate.Month(), 1, 0, 0, 0, 0, time.UTC)
+		_, firstWeek := firstDay.ISOWeek()
+		_, spendingWeek := spendingDate.ISOWeek()
+		monthWeek := spendingWeek - firstWeek + 1
+
+		// Add spending to corresponding week
+		weeklySpendingsMap[monthWeek] += result.Total
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, fmt.Errorf("cursor error: %w", err)
+	}
+
+	// Convert map to slice of WeekSpending
+	weekSpendings := make([]domain.WeekSpending, 0, len(weeklySpendingsMap))
+	for weekNum, amount := range weeklySpendingsMap {
+		weekSpendings = append(weekSpendings, domain.WeekSpending{
+			Week:   weekNum,
+			Amount: amount,
+		})
+	}
+
+	// Sort weeks in ascending order
+	sort.Slice(weekSpendings, func(i, j int) bool {
+		return weekSpendings[i].Week < weekSpendings[j].Week
+	})
+
+	fmt.Println(weekSpendings)
+	return weekSpendings, nil
+}
+
+func getMonthDuration(month time.Month, year int) int {
+	nextMonth := time.Date(year, month+1, 1, 0, 0, 0, 0, time.UTC)
+	lastDay := nextMonth.AddDate(0, 0, -1)
+
+	return lastDay.Day()
 }

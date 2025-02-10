@@ -17,6 +17,7 @@ import (
 type ISpendingService interface {
 	AddSpending(ctx context.Context, payload *domain.AddSpending) (int32, error)
 	GetWeekSpendings(ctx context.Context, date time.Time) (*domain.WeeklySpendings, error)
+	GetMonthSpendings(ctx context.Context, date time.Time) ([]domain.WeekSpending, error)
 }
 
 type SpendingHandler struct {
@@ -74,27 +75,56 @@ func (sh *SpendingHandler) GetWeekSpendings(c telebot.Context) error {
 }
 
 func formatWeekSpendingsMessage(ws *dto.WeeklySpendings) string {
-	weekdays := []string{"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"}
+	weekdays := []string{"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"}
 	var message strings.Builder
-	message.WriteString("Weekly Spendings:\n \n")
+	message.WriteString("Week Spendings:\n \n")
+
+	today := time.Now().UTC()
+
+	// Calculate the start of the week (Monday) for the current week
+	startOfWeek := today.AddDate(0, 0, -int(today.Weekday())) // Adjust for Sun
+	// if today.Weekday() == 0 {                                   // If today is Sunday, set the start of the week to Monday of the current week
+	// 	startOfWeek = today.AddDate(0, 0, -6)
+	// }
 
 	for i, weekday := range weekdays {
-		date := time.Now().AddDate(0, 0, -int(time.Now().Weekday())+i+1)
+		date := startOfWeek.AddDate(0, 0, i)
 		formattedDate := date.Format("2006-01-02")
+
 		amount := ws.Days[formattedDate]
+
 		message.WriteString(fmt.Sprintf("%s %s: %d din\n", weekday, date.Format("02-01"), amount))
 	}
 
-	message.WriteString(fmt.Sprintf("\nTotal: %d din", ws.Total))
+	message.WriteString(fmt.Sprintf("\nSpent: %d din", ws.Total))
+	message.WriteString(fmt.Sprintf("\nLeft: %d din", ws.Left))
 	return message.String()
 }
 
-// // Helper function to get index of weekday
-// func indexOf(slice []string, item string) int {
-// 	for i, v := range slice {
-// 		if v == item {
-// 			return i
-// 		}
-// 	}
-// 	return -1
-// }
+func (sh *SpendingHandler) GetMonthSpendings(c telebot.Context) error {
+	telegramUser := c.Sender()
+	if telegramUser.ID != int64(625034947) && telegramUser.ID != int64(481899825) {
+		return nil
+	}
+
+	monthSpendings, err := sh.spendingService.GetMonthSpendings(context.Background(), time.Now())
+	if err != nil {
+		log.Printf("Error getting month spendings: %v", err)
+		return c.Send("Failed to get month spendings. Please try again.")
+	}
+
+	response := converter.ToGetMonthSpendingsResponse(monthSpendings)
+	return c.Send(formatMonthSpendingsMessage(response))
+}
+
+func formatMonthSpendingsMessage(ws *dto.MonthSpendings) string {
+	var message strings.Builder
+	message.WriteString("Month Spendings:\n \n")
+
+	for _, week := range ws.Weeks {
+		message.WriteString(fmt.Sprintf("Week %d: %d din\n", week.Week, week.Amount))
+	}
+
+	message.WriteString(fmt.Sprintf("\nSpent: %d din", ws.Total))
+	return message.String()
+}

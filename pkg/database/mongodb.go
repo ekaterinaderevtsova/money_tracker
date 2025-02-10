@@ -3,7 +3,6 @@ package mongodb
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -13,8 +12,6 @@ import (
 func NewClient(uri, username, password string) (*mongo.Client, error) {
 	opts := options.Client().ApplyURI(uri)
 	if username != "" && password != "" {
-		fmt.Println(username)
-		fmt.Println(password)
 		opts.SetAuth(options.Credential{
 			Username: username, Password: password,
 		})

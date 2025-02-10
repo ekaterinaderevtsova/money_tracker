@@ -11,6 +11,7 @@ type ISpendingRepository interface {
 	GetAllSpendings(ctx context.Context) ([]domain.AddSpending, error)
 	GetDaySpendings(ctx context.Context, date time.Time) (int32, error)
 	GetWeekSpendings(ctx context.Context, date time.Time) (*domain.WeeklySpendings, error)
+	GetMonthSpendings(ctx context.Context, date time.Time) ([]domain.WeekSpending, error)
 }
 
 type SpendingService struct {
@@ -42,4 +43,13 @@ func (ss *SpendingService) GetWeekSpendings(ctx context.Context, date time.Time)
 	}
 
 	return weekSpendings, nil
+}
+
+func (ss *SpendingService) GetMonthSpendings(ctx context.Context, date time.Time) ([]domain.WeekSpending, error) {
+	monthSpendings, err := ss.spendingRepository.GetMonthSpendings(ctx, date)
+	if err != nil {
+		return nil, err
+	}
+
+	return monthSpendings, nil
 }
