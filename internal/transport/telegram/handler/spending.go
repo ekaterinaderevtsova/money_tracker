@@ -58,6 +58,59 @@ func (sh *SpendingHandler) AddSpending(c telebot.Context) error {
 	return c.Send(fmt.Sprintf("Spending added successfully! Overall, spent today: %d", daySpendings))
 }
 
+func (sh *SpendingHandler) AddOldSpending(c telebot.Context) error {
+	telegramUser := c.Sender()
+	if telegramUser.ID != int64(625034947) && telegramUser.ID != int64(481899825) {
+		return nil
+	}
+
+	input := c.Message().Payload
+	if input == "" {
+		return c.Send("Please provide the amount to add. Usage: /add <amount>")
+	}
+
+	parts := strings.Fields(input)
+	if len(parts) != 2 {
+		return c.Send("Invalid format. Please provide both date and sum as '/add <date> <sum>'")
+	}
+
+	dateStr := parts[0]
+	sumStr := parts[1]
+
+	sum, err := strconv.Atoi(sumStr)
+	if err != nil {
+		return c.Send("Invalid sum. Please provide a valid integer.")
+	}
+
+	parsedDate, err := time.Parse("02.01", dateStr)
+	if err != nil {
+		return c.Send("Invalid date format. Use DD.MM format like 24.06")
+	}
+
+	if parsedDate.Format("02.01") != dateStr {
+		return c.Send("Invalid date. Please check the day and month values.")
+	}
+
+	payload := &domain.AddSpending{
+		Sum: int32(sum),
+		Date: time.Date(
+			2025,
+			parsedDate.Month(),
+			parsedDate.Day(),
+			0, 0, 0, 0, // Set time to midnight
+			time.Local,
+		),
+	}
+
+	daySpendings, err := sh.spendingService.AddSpending(context.Background(), payload)
+	if err != nil {
+		log.Printf("Error adding spending: %v", err)
+		return c.Send("Failed to add spending. Please try again.")
+	}
+
+	return c.Send(fmt.Sprintf("Spending added successfully! Overall, spent on %s: %d", dateStr, daySpendings))
+}
+
 func (sh *SpendingHandler) GetWeekSpendings(c telebot.Context) error {
 	telegramUser := c.Sender()
 	if telegramUser.ID != int64(625034947) && telegramUser.ID != int64(481899825) {

@@ -17,6 +17,8 @@ func NewSpendingRepository(db *pgxpool.Pool) *SpendingRepository {
 }
 
 func (sr *SpendingRepository) AddSpending(ctx context.Context, payload *domain.AddSpending) error {
+	// TODO: check the date (is it today or in the past)
+
 	_, err := sr.db.Exec(ctx, `
 		INSERT INTO spendings (date, sum)
 		VALUES ($1, $2);
