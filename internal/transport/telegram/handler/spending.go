@@ -16,8 +16,8 @@ import (
 
 type ISpendingService interface {
 	AddSpending(ctx context.Context, payload *domain.AddSpending) (int32, error)
-	GetWeekSpendings(ctx context.Context, date time.Time) (*domain.WeeklySpendings, error)
-	GetMonthSpendings(ctx context.Context, date time.Time) ([]domain.WeekSpending, error)
+	GetWeekSpendings(ctx context.Context, date time.Time) (*domain.WeekSpendings, error)
+	GetMonthSpendings(ctx context.Context, date time.Time) ([]domain.WeekTotalSpending, error)
 }
 
 type SpendingHandler struct {
@@ -75,25 +75,13 @@ func (sh *SpendingHandler) GetWeekSpendings(c telebot.Context) error {
 }
 
 func formatWeekSpendingsMessage(ws *dto.WeeklySpendings) string {
-	weekdays := []string{"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"}
+	weekdays := []string{"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"}
 	var message strings.Builder
-	message.WriteString("Week Spendings:\n \n")
-
-	today := time.Now().UTC()
-
-	// Calculate the start of the week (Monday) for the current week
-	startOfWeek := today.AddDate(0, 0, -int(today.Weekday())) // Adjust for Sun
-	// if today.Weekday() == 0 {                                   // If today is Sunday, set the start of the week to Monday of the current week
-	// 	startOfWeek = today.AddDate(0, 0, -6)
-	// }
+	message.WriteString("Week Spendings:\n\n")
 
 	for i, weekday := range weekdays {
-		date := startOfWeek.AddDate(0, 0, i)
-		formattedDate := date.Format("2006-01-02")
-
-		amount := ws.Days[formattedDate]
-
-		message.WriteString(fmt.Sprintf("%s %s: %d din\n", weekday, date.Format("02-01"), amount))
+		daySpending := ws.Days[i] // Access DaySpendings struct from array
+		message.WriteString(fmt.Sprintf("%s %s: %d din\n", weekday, daySpending.Day, daySpending.Sum))
 	}
 
 	message.WriteString(fmt.Sprintf("\nSpent: %d din", ws.Total))

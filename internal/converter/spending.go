@@ -5,15 +5,23 @@ import (
 	"cmd/main.go/internal/transport/telegram/dto"
 )
 
-func ToGetWeekSpendingsResponseFromServer(domainWeekSpendings *domain.WeeklySpendings) *dto.WeeklySpendings {
+func ToGetWeekSpendingsResponseFromServer(domainWeekSpendings *domain.WeekSpendings) *dto.WeeklySpendings {
+	var days [7]dto.DaySpendings
+	for i, domainDay := range domainWeekSpendings.DaySpendings {
+		days[i] = dto.DaySpendings{
+			Day: domainDay.Day,
+			Sum: domainDay.Sum,
+		}
+	}
+
 	return &dto.WeeklySpendings{
-		Days:  domainWeekSpendings.Days,
+		Days:  days,
 		Total: domainWeekSpendings.Total,
-		Left:  int32(7000) - domainWeekSpendings.Total,
+		Left:  7000 - domainWeekSpendings.Total,
 	}
 }
 
-func ToGetMonthSpendingsResponse(domainWeekSpendings []domain.WeekSpending) *dto.MonthSpendings {
+func ToGetMonthSpendingsResponse(domainWeekSpendings []domain.WeekTotalSpending) *dto.MonthSpendings {
 	var total int32
 	weeks := make([]struct {
 		Week   int   `json:"week"`

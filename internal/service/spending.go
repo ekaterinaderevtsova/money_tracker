@@ -10,8 +10,8 @@ type ISpendingRepository interface {
 	AddSpending(ctx context.Context, payload *domain.AddSpending) error
 	//	GetAllSpendings(ctx context.Context) ([]domain.AddSpending, error)
 	GetDaySpendings(ctx context.Context, date time.Time) (int32, error)
-	GetWeekSpendings(ctx context.Context, date time.Time) (*domain.WeeklySpendings, error)
-	GetMonthSpendings(ctx context.Context, date time.Time) ([]domain.WeekSpending, error)
+	GetWeekSpendings(ctx context.Context, date time.Time) (*domain.WeekSpendings, error)
+	GetMonthSpendings(ctx context.Context, date time.Time) ([]domain.WeekTotalSpending, error)
 }
 
 type SpendingService struct {
@@ -36,7 +36,7 @@ func (ss *SpendingService) AddSpending(ctx context.Context, payload *domain.AddS
 	return daySpendings, nil
 }
 
-func (ss *SpendingService) GetWeekSpendings(ctx context.Context, date time.Time) (*domain.WeeklySpendings, error) {
+func (ss *SpendingService) GetWeekSpendings(ctx context.Context, date time.Time) (*domain.WeekSpendings, error) {
 	weekSpendings, err := ss.spendingRepository.GetWeekSpendings(ctx, date)
 	if err != nil {
 		return nil, err
@@ -45,7 +45,7 @@ func (ss *SpendingService) GetWeekSpendings(ctx context.Context, date time.Time)
 	return weekSpendings, nil
 }
 
-func (ss *SpendingService) GetMonthSpendings(ctx context.Context, date time.Time) ([]domain.WeekSpending, error) {
+func (ss *SpendingService) GetMonthSpendings(ctx context.Context, date time.Time) ([]domain.WeekTotalSpending, error) {
 	monthSpendings, err := ss.spendingRepository.GetMonthSpendings(ctx, date)
 	if err != nil {
 		return nil, err

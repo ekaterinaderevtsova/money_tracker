@@ -7,17 +7,22 @@ type AddSpending struct {
 	Sum  int32     `json:"sum"`
 }
 
-type WeeklySpendings struct {
-	Days  map[string]int32 `json:"days"`
-	Total int32            `json:"total"`
+type DaySpendings struct {
+	Day string
+	Sum int32
 }
 
-type WeekSpending struct {
+type WeekSpendings struct {
+	DaySpendings [7]DaySpendings
+	Total        int32
+}
+
+type WeekTotalSpending struct {
 	Week   int
 	Amount int32
 }
 
 type MonthlySpendings struct {
-	Weeks map[string]int32 `json:"weeks"`
-	Total int32            `json:"total"`
+	Weeks map[string]int32
+	Total int32
 }
