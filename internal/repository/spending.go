@@ -53,7 +53,11 @@ func (sr *SpendingRepository) GetWeekSpendings(ctx context.Context, date time.Ti
 	date = date.UTC()
 	today := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, time.UTC)
 
-	startOfWeek := today.AddDate(0, 0, -int(today.Weekday()-1))
+	daysSinceMonday := (today.Weekday() - time.Monday) % 7
+	if daysSinceMonday < 0 {
+		daysSinceMonday += 7 // Ensure non-negative
+	}
+	startOfWeek := today.AddDate(0, 0, -int(daysSinceMonday))
 
 	endOfWeek := time.Date(
 		startOfWeek.Year(), startOfWeek.Month(), startOfWeek.Day()+6,
@@ -92,5 +96,16 @@ func (sr *SpendingRepository) GetWeekSpendings(ctx context.Context, date time.Ti
 }
 
 func (sr *SpendingRepository) GetMonthSpendings(ctx context.Context, date time.Time) ([]domain.WeekTotalSpending, error) {
+	month := int(date.Month())
+	rows, err := sr.db.Query(ctx, `
+	    SELECT SUM(sum)
+		FROM spendings
+		WHERE MONTH(date) = $1;
+		`, month)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
 	return nil, nil
 }

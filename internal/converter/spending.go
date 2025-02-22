@@ -2,45 +2,34 @@ package converter
 
 import (
 	"cmd/main.go/internal/domain"
-	"cmd/main.go/internal/transport/telegram/dto"
+	httpdto "cmd/main.go/internal/transport/http/dto"
+	"time"
 )
 
-func ToGetWeekSpendingsResponseFromServer(domainWeekSpendings *domain.WeekSpendings) *dto.WeeklySpendings {
-	var days [7]dto.DaySpendings
-	for i, domainDay := range domainWeekSpendings.DaySpendings {
-		days[i] = dto.DaySpendings{
-			Day: domainDay.Day,
-			Sum: domainDay.Sum,
-		}
+func ToAddSpendingFromHandler(payload *httpdto.DaySpendings) (*domain.AddSpending, error) {
+	parsedTime, err := time.Parse("2006-01-02", payload.Day) // Changed format layout
+	if err != nil {
+		return nil, err
 	}
-
-	return &dto.WeeklySpendings{
-		Days:  days,
-		Total: domainWeekSpendings.Total,
-		Left:  7000 - domainWeekSpendings.Total,
-	}
+	return &domain.AddSpending{
+		Date: parsedTime,
+		Sum:  payload.Sum,
+	}, nil
 }
 
-func ToGetMonthSpendingsResponse(domainWeekSpendings []domain.WeekTotalSpending) *dto.MonthSpendings {
-	var total int32
-	weeks := make([]struct {
-		Week   int   `json:"week"`
-		Amount int32 `json:"amount"`
-	}, len(domainWeekSpendings))
-
-	for i, weekSpending := range domainWeekSpendings {
-		weeks[i] = struct {
-			Week   int   `json:"week"`
-			Amount int32 `json:"amount"`
-		}{
-			Week:   weekSpending.Week,
-			Amount: weekSpending.Amount,
+func ToGetWeekSpendingsHTTPResponseFromServer(domainWeekSpendings *domain.WeekSpendings) *httpdto.WeeklySpendings {
+	var days [7]httpdto.DaySpendingsResponse
+	daysOfWeek := [7]string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}
+	for i, domainDay := range domainWeekSpendings.DaySpendings {
+		days[i] = httpdto.DaySpendingsResponse{
+			Date:      domainDay.Day,
+			DayOfWeek: daysOfWeek[i],
+			Sum:       domainDay.Sum,
 		}
-		total += weekSpending.Amount
 	}
 
-	return &dto.MonthSpendings{
-		Weeks: weeks,
-		Total: total,
+	return &httpdto.WeeklySpendings{
+		Days:  days,
+		Total: domainWeekSpendings.Total,
 	}
 }

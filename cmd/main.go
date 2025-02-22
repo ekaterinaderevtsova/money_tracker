@@ -4,13 +4,17 @@ import (
 	"cmd/main.go/internal/config"
 	"cmd/main.go/internal/repository"
 	"cmd/main.go/internal/service"
-	"cmd/main.go/internal/transport/telegram/handler"
+	httpHandler "cmd/main.go/internal/transport/http/handler"
+
+	//telegramHandler "cmd/main.go/internal/transport/telegram/handler"
 	"cmd/main.go/pkg/database"
 	"fmt"
 	"log/slog"
 	"os"
 
-	"gopkg.in/telebot.v4"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
 func main() {
@@ -20,13 +24,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	bot, err := telebot.NewBot(telebot.Settings{
-		Token: newConfig.TelegramBotToken,
-	})
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to start Telegram bot: %v\n", err.Error())
-		os.Exit(1)
-	}
+	// bot, err := telebot.NewBot(telebot.Settings{
+	// 	Token: newConfig.TelegramBotToken,
+	// })
+	// if err != nil {
+	// 	fmt.Fprintf(os.Stderr, "Failed to start Telegram bot: %v\n", err.Error())
+	// 	os.Exit(1)
+	// }
 
 	err = database.RunMigrations(newConfig.DBSource)
 	if err != nil {
@@ -57,8 +61,24 @@ func main() {
 
 	newRepository := repository.NewRepository(newPool)
 	newService := service.NewService(newRepository)
-	newTelegramHandler := handler.NewTelegramHandler(newService)
+	//	newTelegramHandler := telegramHandler.NewTelegramHandler(newService)
+	newHTTPHandler := httpHandler.NewHTTPHandler(newService)
 
-	newTelegramHandler.SetCommands(bot)
-	bot.Start()
+	go startHTTPServer(newHTTPHandler)
+
+	// newTelegramHandler.SetCommands(bot)
+	// bot.Start()
+}
+
+func startHTTPServer(handler *httpHandler.HTTPHandler) {
+	app := fiber.New()
+	app.Use(logger.New())
+	app.Use(cors.New())
+
+	handler.SetSpendingRoutes(app)
+	err := app.Listen(":8000")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to start HTTP server: %v\n", err)
+		os.Exit(1)
+	}
 }
