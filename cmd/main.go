@@ -9,7 +9,6 @@ import (
 	//telegramHandler "cmd/main.go/internal/transport/telegram/handler"
 	"cmd/main.go/pkg/database"
 	"fmt"
-	"log/slog"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
@@ -18,6 +17,7 @@ import (
 )
 
 func main() {
+	fmt.Println("hit main")
 	newConfig, err := config.NewConfig()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to create config: %v\n", err)
@@ -34,13 +34,13 @@ func main() {
 
 	err = database.RunMigrations(newConfig.DBSource)
 	if err != nil {
-		slog.Error("Failed to execute migrations", "err", err)
+		fmt.Fprintf(os.Stderr, "Failed to execute migrations", "err", err)
 		os.Exit(1)
 	}
 
 	newPool, err := database.NewPGXPool(newConfig.DBSource)
 	if err != nil {
-		slog.Error("Failed to create connection pool", "err", err)
+		fmt.Fprintf(os.Stderr, "Failed to create connection pool", "err", err)
 		os.Exit(1)
 	}
 	defer newPool.Close()
@@ -64,7 +64,9 @@ func main() {
 	//	newTelegramHandler := telegramHandler.NewTelegramHandler(newService)
 	newHTTPHandler := httpHandler.NewHTTPHandler(newService)
 
-	go startHTTPServer(newHTTPHandler)
+	fmt.Println("created repository, service and handler")
+
+	startHTTPServer(newHTTPHandler)
 
 	// newTelegramHandler.SetCommands(bot)
 	// bot.Start()
@@ -81,4 +83,5 @@ func startHTTPServer(handler *httpHandler.HTTPHandler) {
 		fmt.Fprintf(os.Stderr, "Failed to start HTTP server: %v\n", err)
 		os.Exit(1)
 	}
+	fmt.Println("server started")
 }

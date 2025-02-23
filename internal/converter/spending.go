@@ -6,6 +6,14 @@ import (
 	"time"
 )
 
+func ToTimeFromString(payload *httpdto.Date) (time.Time, error) {
+	parsedTime, err := time.Parse("2006-01-02", payload.Date) // Changed format layout
+	if err != nil {
+		return time.Time{}, err
+	}
+	return parsedTime, nil
+}
+
 func ToAddSpendingFromHandler(payload *httpdto.DaySpendings) (*domain.AddSpending, error) {
 	parsedTime, err := time.Parse("2006-01-02", payload.Day) // Changed format layout
 	if err != nil {

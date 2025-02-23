@@ -5,7 +5,6 @@ import (
 	"cmd/main.go/internal/domain"
 	httpdto "cmd/main.go/internal/transport/http/dto"
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -31,9 +30,6 @@ func (sh *SpendingHandler) AddSpending(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON("failed to parse input")
 	}
 
-	fmt.Println(payload.Day)
-	fmt.Println(payload.Sum)
-
 	input, err := converter.ToAddSpendingFromHandler(payload)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON("failed to convert input")
@@ -48,7 +44,17 @@ func (sh *SpendingHandler) AddSpending(c *fiber.Ctx) error {
 }
 
 func (sh *SpendingHandler) GetWeekSpendings(c *fiber.Ctx) error {
-	weekSpendings, err := sh.spendingService.GetWeekSpendings(context.Background(), time.Now())
+	dateStr := c.Query("date")
+	if dateStr == "" {
+		return c.Status(fiber.StatusBadRequest).JSON("date query parameter is required")
+	}
+
+	date, err := time.Parse("2006-01-02", dateStr)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON("invalid date format")
+	}
+
+	weekSpendings, err := sh.spendingService.GetWeekSpendings(context.Background(), date)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON("failed to fetch spendings")
 	}

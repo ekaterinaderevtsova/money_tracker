@@ -1,5 +1,9 @@
 package httpdto
 
+type Date struct {
+	Date string `json:"date"`
+}
+
 type DaySpendings struct {
 	Day string `json:"day"`
 	Sum int32  `json:"sum"`
