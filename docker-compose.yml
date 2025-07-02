@@ -27,6 +27,16 @@ services:
     networks:
       - app-network
 
+  redis:
+    image: redis:7.2-alpine
+    container_name: spendings_redis
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+
   grafana:
     build:
       context: ./grafana
@@ -43,6 +53,7 @@ services:
 
 volumes:
   postgres_data:
+  redis-data:
 
 networks:
   app-network:

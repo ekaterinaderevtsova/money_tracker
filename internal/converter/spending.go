@@ -37,7 +37,8 @@ func ToGetWeekSpendingsHTTPResponseFromServer(domainWeekSpendings *domain.WeekSp
 	}
 
 	return &httpdto.WeeklySpendings{
-		Days:  days,
-		Total: domainWeekSpendings.Total,
+		Days:    days,
+		Total:   domainWeekSpendings.Total,
+		Average: domainWeekSpendings.Average,
 	}
 }

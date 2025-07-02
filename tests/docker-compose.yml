@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  app_test:
+    container_name: app_test
+    build:
+      context: ..
+      dockerfile: Dockerfile-test
+    ports:
+      - "8001:8000"
+    depends_on:
+      - db_test
+      - redis_test
+    networks:
+      - app-test-network
+    volumes:
+      - ../:/app
+    env_file:
+      - .env
+
+  db_test:
+    image: postgres:15-alpine
+    container_name: db_test
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    env_file:
+      - .env
+    networks:
+      - app-test-network
+
+  redis_test:
+    image: redis:7.2-alpine
+    container_name: redis_test
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - app-test-network
+
+volumes:
+  postgres_data:
+  redis-data:
+
+networks:
+  app-test-network:

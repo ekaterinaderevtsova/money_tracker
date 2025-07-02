@@ -8,24 +8,21 @@ import (
 )
 
 type Config struct {
-	DBSource         string `env:"DB_SOURCE,required"`
-	TelegramBotToken string `env:"TELEGRAM_BOT_TOKEN,required"`
-	//	MongoURI         string `env:"MONGODB_URI,required"`
-	//
-	// MongoDatabase    string `env:"MONGODB_DATABASE,required"`
-	// MongoUsername    string `env:"MONGODB_USER,required"`
-	// MongoPassword    string `env:"MONGODB_PASS,required"`
+	RedisAddress  string `env:"REDIS_ADDRESS,required"`
+	RedisPassword string `env:"REDIS_PASSWORD,required"`
+	RedisDatabase string `env:"REDIS_DB,required"`
+
+	DBSource  string `env:"DB_SOURCE,required"`
+	WebAppURL string `env:"WEB_APP_URL,required"`
 }
 
 func NewConfig() (*Config, error) {
-	err := godotenv.Load()
-	if err != nil {
+	if err := godotenv.Load(); err != nil {
 		return nil, fmt.Errorf("error loading .env file: %w", err)
 	}
 
 	var cfg Config
-	err = env.Parse(&cfg)
-	if err != nil {
+	if err := env.Parse(&cfg); err != nil {
 		return nil, fmt.Errorf("error parsing environment variables: %w", err)
 	}
 

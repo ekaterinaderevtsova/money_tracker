@@ -1,0 +1,38 @@
+{"level":"error","time":"2025-07-03T14:30:06.712Z","message":"Error adding spending to db","error":"context canceled"}
+{"level":"info","time":"2025-07-03T14:33:18.002Z","message":"Service stopped"}
+{"level":"info","time":"2025-07-03T14:34:34.965Z","message":"Service stopped"}
+{"level":"error","time":"2025-07-03T14:36:26.155Z","message":"Error adding spending to db","error":"context canceled"}
+{"level":"info","time":"2025-07-03T14:38:34.476Z","message":"New spending added","date":"2025-06-29T00:00:00.000Z","sum":1000}
+{"level":"info","time":"2025-07-03T14:40:17.956Z","message":"New spending added","date":"2025-06-29T00:00:00.000Z","sum":1000}
+{"level":"info","time":"2025-07-03T14:41:37.828Z","message":"New spending added","date":"2025-07-03T00:00:00.000Z","sum":1000}
+{"level":"info","time":"2025-07-03T14:45:26.159Z","message":"New spending added","date":"2025-07-03T00:00:00.000Z","sum":1000}
+{"level":"info","time":"2025-07-03T14:46:10.826Z","message":"New spending added","date":"2025-07-03T00:00:00.000Z","sum":1000}
+{"level":"info","time":"2025-07-03T14:47:46.555Z","message":"New spending added","date":"2025-07-03T00:00:00.000Z","sum":1000}
+{"level":"info","time":"2025-07-03T14:49:40.499Z","message":"New spending added","date":"2025-07-03T00:00:00.000Z","sum":1000}
+{"level":"info","time":"2025-07-03T14:50:32.445Z","message":"New spending added","date":"2025-07-03T00:00:00.000Z","sum":1000}
+{"level":"info","time":"2025-07-03T15:00:24.876Z","message":"New spending added","date":"2025-07-03T00:00:00.000Z","sum":1000}
+{"level":"info","time":"2025-07-04T09:39:30.980Z","message":"New spending added","date":"2025-07-03T00:00:00.000Z","sum":1000}
+{"level":"info","time":"2025-07-04T11:24:30.356Z","message":"New spending added","date":"2025-07-03T00:00:00.000Z","added spending":1000}
+{"level":"info","time":"2025-07-04T12:30:39.576Z","message":"New spending added","date":"2025-07-03T00:00:00.000Z","added spending":1000}
+{"level":"info","time":"2025-07-04T12:32:38.359Z","message":"New spending added","date":"2025-07-03T00:00:00.000Z","added spending":1000}
+{"level":"info","time":"2025-07-04T12:34:43.333Z","message":"New spending added","date":"2025-07-04T00:00:00.000Z","added spending":1000}
+{"level":"info","time":"2025-07-04T15:30:42.716Z","message":"New spending added","date":"2025-07-04","added spending":1000}
+{"level":"info","time":"2025-07-04T15:33:46.893Z","message":"New spending added","date":"2025-07-04","added spending":1000}
+{"level":"info","time":"2025-07-04T15:47:16.393Z","message":"New spending added","date":"2025-07-04","added spending":1000}
+{"level":"info","time":"2025-07-04T15:48:22.270Z","message":"New spending added","date":"2025-07-04","added spending":1000}
+{"level":"info","time":"2025-07-04T16:28:16.208Z","message":"New spending added","date":"2025-07-04","added spending":1000}
+{"level":"info","time":"2025-07-04T16:30:09.563Z","message":"New spending added","date":"2025-07-04","added spending":1000}
+{"level":"info","time":"2025-07-04T16:31:14.258Z","message":"New spending added","date":"2025-07-04","added spending":1000}
+{"level":"info","time":"2025-07-04T16:31:50.971Z","message":"New spending added","date":"2025-07-04","added spending":1000}
+{"level":"info","time":"2025-07-04T16:32:32.407Z","message":"New spending added","date":"2025-07-04","added spending":1000}
+{"level":"info","time":"2025-07-05T11:49:17.143Z","message":"New spending added","date":"2025-07-04","added spending":1000}
+{"level":"info","time":"2025-07-05T12:14:49.131Z","message":"New spending added","date":"2025-07-05","added spending":1000}
+{"level":"info","time":"2025-07-05T12:15:55.052Z","message":"New spending added","date":"2025-07-05","added spending":1000}
+{"level":"info","time":"2025-07-05T12:21:18.274Z","message":"New spending added","date":"2025-07-05","added spending":1000}
+{"level":"info","time":"2025-07-05T12:24:34.763Z","message":"New spending added","date":"2025-07-05","added spending":1000}
+{"level":"info","time":"2025-07-05T12:26:52.245Z","message":"New spending added","date":"2025-07-05","added spending":1000}
+{"level":"info","time":"2025-07-05T12:31:21.897Z","message":"New spending added","date":"2025-07-05","added spending":1000}
+{"level":"info","time":"2025-07-05T12:34:01.896Z","message":"New spending added","date":"2025-07-05","added spending":1000}
+{"level":"info","time":"2025-07-05T12:34:01.898Z","message":"New spending added","date":"2025-07-05","added spending":1000}
+{"level":"info","time":"2025-07-05T14:50:41.666Z","message":"New spending added","date":"2025-07-05","added spending":1000}
+{"level":"info","time":"2025-07-05T14:50:41.669Z","message":"New spending added","date":"2025-07-05","added spending":1000}

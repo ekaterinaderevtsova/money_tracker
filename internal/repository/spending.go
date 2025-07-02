@@ -3,29 +3,205 @@ package repository
 import (
 	"cmd/main.go/internal/domain"
 	"context"
+	"fmt"
+	"slices"
+	"strconv"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/redis/go-redis/v9"
 )
 
 type SpendingRepository struct {
-	db *pgxpool.Pool
+	db          *pgxpool.Pool
+	redisDb     *redis.Client
+	currentWeek []string
 }
 
-func NewSpendingRepository(db *pgxpool.Pool) *SpendingRepository {
-	return &SpendingRepository{db: db}
-}
-
-func (sr *SpendingRepository) AddSpending(ctx context.Context, payload *domain.AddSpending) error {
-	// TODO: check the date (is it today or in the past)
-
-	_, err := sr.db.Exec(ctx, `
-		INSERT INTO spendings (date, sum)
-		VALUES ($1, $2);
-	`, payload.Date, payload.Sum)
-	if err != nil {
-		return err
+func NewSpendingRepository(ctx context.Context, db *pgxpool.Pool, redisDb *redis.Client) *SpendingRepository {
+	spendingRepo := &SpendingRepository{
+		db:      db,
+		redisDb: redisDb,
 	}
+
+	spendingRepo.initCurrentWeek()
+
+	go func() {
+		err := spendingRepo.initRedisWeekDays(ctx)
+		if err != nil {
+			fmt.Printf("failed to initialize redis data: %v\n", err)
+		}
+	}()
+
+	go func() {
+		for {
+			now := time.Now()
+			daysUntilMonday := (int(time.Monday) - int(now.Weekday()) + 7) % 7
+			if daysUntilMonday == 0 && now.Hour() >= 0 {
+				daysUntilMonday = 7
+			}
+
+			nextMonday := now.Truncate(24*time.Hour).AddDate(0, 0, daysUntilMonday)
+			nextRun := time.Date(
+				nextMonday.Year(), nextMonday.Month(), nextMonday.Day(),
+				0, 0, 0, 0, nextMonday.Location(),
+			)
+
+			sleepDuration := time.Until(nextRun)
+			timer := time.NewTimer(sleepDuration)
+
+			select {
+			case <-ctx.Done():
+				timer.Stop()
+				return
+			case <-timer.C:
+				err := spendingRepo.transferRedisDataToPostgres(ctx)
+				if err != nil {
+					// TODO: log
+				}
+
+				spendingRepo.initCurrentWeek()
+				spendingRepo.initRedisWeekDays(ctx)
+			}
+		}
+	}()
+
+	return spendingRepo
+}
+
+func (r *SpendingRepository) initCurrentWeek() {
+	now := time.Now()
+	weekday := int(now.Weekday())
+	if weekday == 0 { // Sunday == 0
+		weekday = 7
+	}
+
+	startOfWeek := now.AddDate(0, 0, -weekday+1).Truncate(24 * time.Hour)
+	r.currentWeek = make([]string, 7)
+
+	for i := 0; i < 7; i++ {
+		day := startOfWeek.AddDate(0, 0, i)
+		r.currentWeek[i] = day.Format("2006-01-02")
+	}
+}
+
+func (r *SpendingRepository) initRedisWeekDays(ctx context.Context) error {
+	for _, day := range r.currentWeek {
+
+		if err := r.redisDb.RPush(ctx, domain.SpendingsKey+day, 0).Err(); err != nil {
+			return err
+		}
+
+		if err := r.redisDb.Set(ctx, domain.TotalKey+day, 0, 0).Err(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (sr *SpendingRepository) transferRedisDataToPostgres(ctx context.Context) error {
+	for _, day := range sr.currentWeek {
+		// TODO: use MGET or scan
+		sumStr, err := sr.redisDb.Get(ctx, domain.TotalKey+day).Result()
+		if err != nil {
+			// TODO: log
+			continue
+		}
+
+		sum, _ := strconv.Atoi(sumStr)
+
+		spendingInfo := domain.DaySpendings{
+			Day: day,
+			Sum: int32(sum),
+		}
+
+		// TODO: write AddSpendings func
+		err = sr.AddSpending(ctx, &spendingInfo)
+		if err != nil {
+			// TODO: log
+			continue
+		}
+	}
+
+	err := sr.redisDb.FlushAll(ctx)
+	if err != nil {
+		// TODO: log
+	}
+
+	return nil
+}
+
+func (r *SpendingRepository) IsCurrentWeek(date string) bool {
+	return slices.Contains(r.currentWeek, date)
+}
+
+func (sr *SpendingRepository) AddCurrentWeekSpending(ctx context.Context, payload *domain.DaySpendings) error {
+
+	if err := sr.redisDb.LPush(ctx, domain.SpendingsKey+payload.Day, payload.Sum).Err(); err != nil {
+		return fmt.Errorf("failed to set new sum in redis: %w", err)
+	}
+
+	if err := sr.redisDb.IncrBy(ctx, domain.TotalKey+payload.Day, int64(payload.Sum)).Err(); err != nil {
+		return fmt.Errorf("failed to set new sum in redis: %w", err)
+	}
+
+	return nil
+}
+
+func (sr *SpendingRepository) GetCurrentWeekSpendings(ctx context.Context) (*domain.WeekSpendings, error) {
+	var weekSpendings domain.WeekSpendings
+	var total int32
+	var daysCount int32
+	today := time.Now().Format("2006-01-02")
+
+	for i, day := range sr.currentWeek {
+		//keys = append(keys, string(day))
+		sumStr, err := sr.redisDb.Get(ctx, domain.TotalKey+day).Result()
+		if err != nil {
+			// TODO: log
+			continue
+		}
+
+		sum, _ := strconv.Atoi(sumStr)
+
+		weekSpendings.DaySpendings[i] = domain.DaySpendings{
+			Day: day,
+			Sum: int32(sum),
+		}
+
+		total += int32(sum)
+
+		if today >= day {
+			daysCount++
+		}
+	}
+
+	weekSpendings.Total = total
+	weekSpendings.Average = 0
+	if daysCount > 0 {
+		weekSpendings.Average = total / daysCount
+	}
+	return &weekSpendings, nil
+}
+
+// TODO: transfer to a separate repo
+func (sr *SpendingRepository) AddSpending(ctx context.Context, payload *domain.DaySpendings) error {
+	date, err := time.Parse("2006-01-02", payload.Day)
+	if err != nil {
+		return fmt.Errorf("invalid date format: %w", err)
+	}
+
+	_, err = sr.db.Exec(ctx, `
+		INSERT INTO spendings (date, sum)
+		VALUES ($1, $2)
+		ON CONFLICT (date)
+		DO UPDATE SET sum = spendings.sum + EXCLUDED.sum
+	`, date, payload.Sum)
+
+	if err != nil {
+		return fmt.Errorf("failed to insert/update spending: %w", err)
+	}
+
 	return nil
 }
 
@@ -93,19 +269,4 @@ func (sr *SpendingRepository) GetWeekSpendings(ctx context.Context, date time.Ti
 	}
 
 	return &weekSpendings, nil
-}
-
-func (sr *SpendingRepository) GetMonthSpendings(ctx context.Context, date time.Time) ([]domain.WeekTotalSpending, error) {
-	month := int(date.Month())
-	rows, err := sr.db.Query(ctx, `
-	    SELECT SUM(sum)
-		FROM spendings
-		WHERE MONTH(date) = $1;
-		`, month)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	return nil, nil
 }

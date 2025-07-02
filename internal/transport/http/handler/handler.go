@@ -1,13 +1,18 @@
 package handler
 
-import "cmd/main.go/internal/service"
+import (
+	"cmd/main.go/internal/service"
+	"context"
+
+	"go.uber.org/zap"
+)
 
 type HTTPHandler struct {
 	SpendingHandler *SpendingHandler
 }
 
-func NewHTTPHandler(service *service.Service) *HTTPHandler {
+func NewHTTPHandler(ctx context.Context, logger *zap.Logger, service *service.Service) *HTTPHandler {
 	return &HTTPHandler{
-		SpendingHandler:                 NewSpendingHandler(service.SpendingService),
+		SpendingHandler: NewSpendingHandler(ctx, logger, service.SpendingService),
 	}
 }
