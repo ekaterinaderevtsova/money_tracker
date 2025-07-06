@@ -57,7 +57,7 @@ func main() {
 	newService := service.NewService(newRepository)
 	newHTTPHandler := httpHandler.NewHTTPHandler(ctx, zapLogger, newService)
 
-	app := startHTTPServer(zapLogger, newHTTPHandler)
+	app := startHTTPServer(newHTTPHandler)
 
 	go func() {
 		err := app.Listen(":8000")
@@ -76,9 +76,9 @@ func main() {
 	zapLogger.Info("Service stopped")
 }
 
-func startHTTPServer(logger *zap.Logger, handler *httpHandler.HTTPHandler) *fiber.App {
+func startHTTPServer(handler *httpHandler.HTTPHandler) *fiber.App {
 	app := fiber.New()
-	app.Use(logger)
+	//	app.Use(logger)
 
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     "https://myspendingstracker.netlify.app, http://localhost:5173, http://localhost:4173, http://localhost:3004",

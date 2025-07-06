@@ -11,8 +11,8 @@ import (
 
 func NewRedisConn(ctx context.Context, address, password string) (*redis.Client, error) {
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "redis_test:6379",
-		Password: "password",
+		Addr:     address,
+		Password: password,
 		DB:       0,
 	})
 

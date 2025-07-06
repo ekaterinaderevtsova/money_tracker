@@ -10,6 +10,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/redis/go-redis/v9"
+	"github.com/rs/zerolog/log"
 )
 
 type SpendingRepository struct {
@@ -26,12 +27,14 @@ func NewSpendingRepository(ctx context.Context, db *pgxpool.Pool, redisDb *redis
 
 	spendingRepo.initCurrentWeek()
 
-	go func() {
-		err := spendingRepo.initRedisWeekDays(ctx)
-		if err != nil {
-			fmt.Printf("failed to initialize redis data: %v\n", err)
-		}
-	}()
+	// if err := migrations.RunRedisMigrations(ctx, redisDb, spendingRepo.currentWeek); err != nil {
+	// 	fmt.Printf("failed to run redis migrations: %v\n", err)
+	// }
+
+	err := spendingRepo.initRedisWeekDays(ctx)
+	if err != nil {
+		fmt.Printf("failed to initialize redis data: %v\n", err)
+	}
 
 	go func() {
 		for {
@@ -86,14 +89,29 @@ func (r *SpendingRepository) initCurrentWeek() {
 }
 
 func (r *SpendingRepository) initRedisWeekDays(ctx context.Context) error {
+	log.Print("Init redis")
 	for _, day := range r.currentWeek {
+		dayKey := domain.SpendingsKey + day
+		totalKey := domain.TotalKey + day
 
-		if err := r.redisDb.RPush(ctx, domain.SpendingsKey+day, 0).Err(); err != nil {
+		exists, err := r.redisDb.Exists(ctx, dayKey).Result()
+		if err != nil {
 			return err
 		}
+		if exists == 0 {
+			if err := r.redisDb.RPush(ctx, dayKey, 0).Err(); err != nil {
+				return err
+			}
+		}
 
-		if err := r.redisDb.Set(ctx, domain.TotalKey+day, 0, 0).Err(); err != nil {
+		exists, err = r.redisDb.Exists(ctx, totalKey).Result()
+		if err != nil {
 			return err
+		}
+		if exists == 0 {
+			if err := r.redisDb.Set(ctx, totalKey, 0, 0).Err(); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
