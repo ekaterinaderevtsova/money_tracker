@@ -3,15 +3,16 @@ package service
 import (
 	"cmd/main.go/internal/domain"
 	"context"
+	"fmt"
 	"time"
 )
 
 type ISpendingRepository interface {
-	AddSpending(ctx context.Context, payload *domain.AddSpending) error
-	//	GetAllSpendings(ctx context.Context) ([]domain.AddSpending, error)
-	GetDaySpendings(ctx context.Context, date time.Time) (int32, error)
+	IsCurrentWeek(date string) bool
+	AddSpending(ctx context.Context, payload *domain.DaySpendings) error
+	AddCurrentWeekSpending(ctx context.Context, payload *domain.DaySpendings) error
 	GetWeekSpendings(ctx context.Context, date time.Time) (*domain.WeekSpendings, error)
-	GetMonthSpendings(ctx context.Context, date time.Time) ([]domain.WeekTotalSpending, error)
+	GetCurrentWeekSpendings(ctx context.Context) (*domain.WeekSpendings, error)
 }
 
 type SpendingService struct {
@@ -22,34 +23,32 @@ func NewSpendingService(spendingRepository ISpendingRepository) *SpendingService
 	return &SpendingService{spendingRepository: spendingRepository}
 }
 
-func (ss *SpendingService) AddSpending(ctx context.Context, payload *domain.AddSpending) (int32, error) {
-	err := ss.spendingRepository.AddSpending(ctx, payload)
-	if err != nil {
-		return 0, err
+func (ss *SpendingService) AddSpending(ctx context.Context, payload *domain.DaySpendings) error {
+	if ss.spendingRepository.IsCurrentWeek(payload.Day) {
+		return ss.spendingRepository.AddCurrentWeekSpending(ctx, payload)
 	}
-
-	daySpendings, err := ss.spendingRepository.GetDaySpendings(ctx, payload.Date)
-	if err != nil {
-		return 0, err
-	}
-
-	return daySpendings, nil
+	return ss.spendingRepository.AddSpending(ctx, payload)
 }
 
-func (ss *SpendingService) GetWeekSpendings(ctx context.Context, date time.Time) (*domain.WeekSpendings, error) {
-	weekSpendings, err := ss.spendingRepository.GetWeekSpendings(ctx, date)
+func (ss *SpendingService) GetWeekSpendings(ctx context.Context, date string) (*domain.WeekSpendings, error) {
+	if ss.spendingRepository.IsCurrentWeek(date) {
+		fmt.Println("CURRENT WEEK")
+		weekSpendings, err := ss.spendingRepository.GetCurrentWeekSpendings(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return weekSpendings, nil
+	}
+
+	dateParsed, err := time.Parse("2006-01-02", date)
 	if err != nil {
+		//	sh.logger.Error("Invalid date format", zap.Error(err))
 		return nil, err
 	}
 
+	weekSpendings, err := ss.spendingRepository.GetWeekSpendings(ctx, dateParsed)
+	if err != nil {
+		return nil, err
+	}
 	return weekSpendings, nil
-}
-
-func (ss *SpendingService) GetMonthSpendings(ctx context.Context, date time.Time) ([]domain.WeekTotalSpending, error) {
-	monthSpendings, err := ss.spendingRepository.GetMonthSpendings(ctx, date)
-	if err != nil {
-		return nil, err
-	}
-
-	return monthSpendings, nil
 }

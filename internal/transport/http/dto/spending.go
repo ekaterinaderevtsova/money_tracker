@@ -16,8 +16,9 @@ type DaySpendingsResponse struct {
 }
 
 type WeeklySpendings struct {
-	Days  [7]DaySpendingsResponse `json:"daySpendings"`
-	Total int32                   `json:"total"`
+	Days    [7]DaySpendingsResponse `json:"daySpendings"`
+	Total   int32                   `json:"total"`
+	Average int32                   `json:"average"`
 }
 
 type MonthSpendings struct {
