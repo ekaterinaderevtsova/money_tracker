@@ -37,6 +37,7 @@ func NewSpendingRepository(ctx context.Context, db *pgxpool.Pool, redisDb *redis
 	}
 
 	go func() {
+		// TODO: Create ticker
 		for {
 			now := time.Now()
 			daysUntilMonday := (int(time.Monday) - int(now.Weekday()) + 7) % 7
@@ -125,7 +126,7 @@ func (sr *SpendingRepository) transferRedisDataToPostgres(ctx context.Context) e
 			// TODO: log
 			continue
 		}
-
+		// TODO: process error
 		sum, _ := strconv.Atoi(sumStr)
 
 		spendingInfo := domain.DaySpendings{
@@ -285,6 +286,8 @@ func (sr *SpendingRepository) GetWeekSpendings(ctx context.Context, date time.Ti
 		weekSpendings.Total += daySpendings.Sum
 		i++
 	}
+
+	weekSpendings.Average = weekSpendings.Total / 7
 
 	return &weekSpendings, nil
 }

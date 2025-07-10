@@ -3,7 +3,6 @@ package service
 import (
 	"cmd/main.go/internal/domain"
 	"context"
-	"fmt"
 	"time"
 )
 
@@ -32,7 +31,6 @@ func (ss *SpendingService) AddSpending(ctx context.Context, payload *domain.DayS
 
 func (ss *SpendingService) GetWeekSpendings(ctx context.Context, date string) (*domain.WeekSpendings, error) {
 	if ss.spendingRepository.IsCurrentWeek(date) {
-		fmt.Println("CURRENT WEEK")
 		weekSpendings, err := ss.spendingRepository.GetCurrentWeekSpendings(ctx)
 		if err != nil {
 			return nil, err
