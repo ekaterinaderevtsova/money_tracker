@@ -1,15 +1,16 @@
 package tests
 
 import (
-	"cmd/main.go/internal/config"
-	"cmd/main.go/internal/repository"
-	"cmd/main.go/internal/service"
-	"cmd/main.go/internal/transport/http/handler"
-	"cmd/main.go/pkg/database"
-	"cmd/main.go/pkg/logger"
-	testdata "cmd/main.go/tests/test_data"
 	"context"
 	"fmt"
+	"moneytracker/internal/config"
+	"moneytracker/internal/repository"
+	"moneytracker/internal/service"
+	"moneytracker/internal/transport/http/handler"
+	"moneytracker/pkg/database"
+	"moneytracker/pkg/logger"
+	testdata "moneytracker/tests/test_data"
+
 	"os"
 	"testing"
 	"time"

@@ -1,11 +1,13 @@
 package main
 
 import (
-	"cmd/main.go/internal/config"
-	"cmd/main.go/internal/repository"
-	"cmd/main.go/internal/service"
-	httpHandler "cmd/main.go/internal/transport/http/handler"
 	"context"
+	"moneytracker/internal/config"
+	"moneytracker/internal/repository"
+	"moneytracker/internal/service"
+	httpHandler "moneytracker/internal/transport/http/handler"
+	"moneytracker/pkg/database"
+	"moneytracker/pkg/logger"
 	"os/signal"
 	"syscall"
 
@@ -13,8 +15,6 @@ import (
 	"go.uber.org/zap/zapcore"
 
 	//telegramHandler "cmd/main.go/internal/transport/telegram/handler"
-	"cmd/main.go/pkg/database"
-	"cmd/main.go/pkg/logger"
 	"fmt"
 	"os"
 

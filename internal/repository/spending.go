@@ -1,9 +1,9 @@
 package repository
 
 import (
-	"cmd/main.go/internal/domain"
 	"context"
 	"fmt"
+	"moneytracker/internal/domain"
 	"slices"
 	"strconv"
 	"time"

@@ -1,6 +1,6 @@
 package service
 
-import "cmd/main.go/internal/repository"
+import "moneytracker/internal/repository"
 
 type Service struct {
 	SpendingService *SpendingService

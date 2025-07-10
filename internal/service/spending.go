@@ -1,8 +1,8 @@
 package service
 
 import (
-	"cmd/main.go/internal/domain"
 	"context"
+	"moneytracker/internal/domain"
 	"time"
 )
 

@@ -1,13 +1,13 @@
 package main
 
 import (
-	"cmd/main.go/internal/config"
-	"cmd/main.go/internal/repository"
-	"cmd/main.go/internal/service"
-	"cmd/main.go/pkg/database"
-	"cmd/main.go/pkg/logger"
 	"context"
 	"fmt"
+	"moneytracker/internal/config"
+	"moneytracker/internal/repository"
+	"moneytracker/internal/service"
+	"moneytracker/pkg/database"
+	"moneytracker/pkg/logger"
 	"os"
 
 	"go.uber.org/zap"

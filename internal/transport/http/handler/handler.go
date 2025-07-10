@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"cmd/main.go/internal/service"
 	"context"
+	"moneytracker/internal/service"
 
 	"go.uber.org/zap"
 )

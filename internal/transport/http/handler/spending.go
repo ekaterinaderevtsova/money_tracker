@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"cmd/main.go/internal/converter"
-	"cmd/main.go/internal/domain"
 	"context"
+	"moneytracker/internal/converter"
+	"moneytracker/internal/domain"
 
 	"go.uber.org/zap"
 
