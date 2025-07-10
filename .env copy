@@ -1,0 +1,12 @@
+DB_SOURCE=postgresql://user:password@spendings_db:5432/spendings_db?sslmode=disable
+
+POSTGRES_USER=user
+POSTGRES_PASSWORD=password
+POSTGRES_DB=spendings_db
+
+REDIS_ADDRESS=spendings_redis:6379
+REDIS_PASSWORD=password
+REDIS_DB=0
+
+TELEGRAM_BOT_TOKEN=7501593709:AAHMHvYz-sDljmx8BgMAc4Bdtpdt5Gz4fMs
+WEB_APP_URL=

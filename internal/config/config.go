@@ -12,8 +12,8 @@ type Config struct {
 	RedisPassword string `env:"REDIS_PASSWORD,required"`
 	RedisDatabase string `env:"REDIS_DB,required"`
 
-	DBSource  string `env:"DB_SOURCE,required"`
-	WebAppURL string `env:"WEB_APP_URL,required"`
+	DBSource string `env:"DB_SOURCE,required"`
+	// WebAppURL string `env:"WEB_APP_URL,required"`
 }
 
 func NewConfig() (*Config, error) {
