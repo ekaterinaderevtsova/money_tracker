@@ -1,0 +1,51 @@
+version: "2"
+
+linters:
+  enable:
+    - sqlclosecheck # checks that sql.Rows and sql.Stmt are closed
+    - bodyclose # checks whether HTTP response body is closed successfully
+    - unparam # reports unused function parameters
+
+  settings:
+    staticcheck:
+      # SAxxxx checks in https://staticcheck.dev/docs/configuration/options/#checks
+      # Example (to disable some checks): [ "all", "-SA1000", "-SA1001"]
+      # Default: ["all", "-ST1000", "-ST1003", "-ST1016", "-ST1020", "-ST1021", "-ST1022"]
+      checks:
+        # Omit embedded fields from selector expression.
+        # https://staticcheck.dev/docs/checks/#QF1008
+        - -QF1008
+    errcheck:
+      # Report about not checking of errors in type assertions: `a := b.(MyStruct)`.
+      # Such cases aren't reported by default.
+      # Default: false
+      check-type-assertions: true
+      # report about assignment of errors to blank identifier: `num, _ := strconv.Atoi(numStr)`.
+      # Such cases aren't reported by default.
+      # Default: false
+      check-blank: true
+      # To disable the errcheck built-in exclude list.
+      # See `-excludeonly` option in https://github.com/kisielk/errcheck#excluding-functions for details.
+      # Default: false
+      disable-default-exclusions: true
+      # List of functions to exclude from checking, where each entry is a single function to exclude.
+      # See https://github.com/kisielk/errcheck#excluding-functions for details.
+      exclude-functions:
+        - fmt.Printf
+        - fmt.Fprintf
+        - fmt.Println
+        - github.com/joho/godotenv.Load
+        - (*github.com/tarantool/go-tarantool.Connection).Close
+        - (*database/sql.DB).Close
+        - (*database/sql.Conn).Close
+        - (*database/sql.Rows).Close
+        - (dc-api/internal/repository.RepoTx).Rollback
+        - (*go.mongodb.org/mongo-driver/mongo.Cursor).Close
+        - (*go.mongodb.org/mongo-driver/mongo.Client).Disconnect
+        - (*github.com/redis/go-redis/v9.baseClient).Close
+        - (io.Closer).Close
+        - (*dc-api/internal/server.App).Shutdown
+        - (*github.com/gofiber/fiber/v2.App).Shutdown
+      # Display function signature instead of selector.
+      # Default: false
+      verbose: true

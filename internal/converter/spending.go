@@ -1,8 +1,8 @@
 package converter
 
 import (
-	"cmd/main.go/internal/domain"
-	httpdto "cmd/main.go/internal/transport/http/dto"
+	"moneytracker/internal/domain"
+	httpdto "moneytracker/internal/transport/http/dto"
 	"time"
 )
 

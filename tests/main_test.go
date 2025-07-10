@@ -1,19 +1,20 @@
 package tests
 
 import (
-	"cmd/main.go/internal/config"
-	"cmd/main.go/internal/repository"
-	"cmd/main.go/internal/service"
-	"cmd/main.go/internal/transport/http/handler"
-	"cmd/main.go/pkg/database"
-	"cmd/main.go/pkg/logger"
-	testdata "cmd/main.go/tests/test_data"
 	"context"
 	"fmt"
+	"moneytracker/internal/config"
+	"moneytracker/internal/repository"
+	"moneytracker/internal/service"
+	"moneytracker/internal/transport/http/handler"
+	"moneytracker/pkg/database"
+	"moneytracker/pkg/logger"
+
 	"os"
 	"testing"
 	"time"
 
+	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
 	"github.com/gofiber/fiber/v2"
@@ -129,9 +130,14 @@ func (s *TrackerTestSuite) startTestServer(ready chan<- bool) {
 	if err != nil {
 		panic(fmt.Sprintf("error initializing logger: %v", err))
 	}
-
 	repo := repository.NewRepository(ctx, s.db, s.redis)
-	service := service.NewService(repo)
+	service, err := service.NewService(ctx, repo, zapLogger)
+	if err != nil {
+		zapLogger.Fatal("Error creating service", zap.Error(err))
+	}
+	if err := service.Start(ctx); err != nil {
+		zapLogger.Fatal("Error starting service", zap.Error(err))
+	}
 	handler := handler.NewHTTPHandler(ctx, zapLogger, service)
 
 	app := fiber.New(fiber.Config{
@@ -201,14 +207,6 @@ func (s *TrackerTestSuite) runMigrations() error {
 	}
 
 	return nil
-}
-
-func (s *TrackerTestSuite) populateRedis() {
-	data := testdata.RedisData()
-	err := s.redis.MSet(context.Background(), data...).Err()
-	if err != nil {
-		s.FailNow("Failed to populate redis", err)
-	}
 }
 
 func (s *TrackerTestSuite) cleanupRedis() {
