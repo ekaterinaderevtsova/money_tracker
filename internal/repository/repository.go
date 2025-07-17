@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"moneytracker/internal/domain"
-	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/redis/go-redis/v9"
@@ -18,7 +17,7 @@ type ICurrentSpendingRepository interface {
 
 type IArchiveSpendingRepository interface {
 	AddSpending(ctx context.Context, payload *domain.DaySpendings) error
-	GetWeekSpendings(ctx context.Context, date time.Time) (*domain.WeekSpendings, error)
+	GetWeekSpendings(ctx context.Context, week []string) (*domain.WeekSpendings, error)
 }
 
 type Repository struct {

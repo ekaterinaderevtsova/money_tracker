@@ -2,11 +2,8 @@ package service
 
 import (
 	"context"
-	"fmt"
-	"log"
 	"moneytracker/internal/domain"
 	"moneytracker/internal/repository"
-	"time"
 )
 
 type SpendingService struct {
@@ -43,16 +40,12 @@ func (s *SpendingService) GetWeekSpendings(ctx context.Context, date string) (*d
 		return weekSpendings, nil
 	}
 
-	fmt.Println("date: ", date)
-
-	dateParsed, err := time.Parse("2006-01-02", date)
+	week, err := s.weekManager.GetArchiveWeek(date)
 	if err != nil {
-		log.Println("Invalid date format")
 		return nil, err
 	}
 
-	weekSpendings, err := s.archiveSpendingRepository.GetWeekSpendings(ctx, dateParsed)
-
+	weekSpendings, err := s.archiveSpendingRepository.GetWeekSpendings(ctx, week)
 	if err != nil {
 		return nil, err
 	}

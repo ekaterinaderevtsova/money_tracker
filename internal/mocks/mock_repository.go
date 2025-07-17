@@ -13,7 +13,6 @@ import (
 	context "context"
 	domain "moneytracker/internal/domain"
 	reflect "reflect"
-	time "time"
 
 	gomock "go.uber.org/mock/gomock"
 )
@@ -138,16 +137,16 @@ func (mr *MockIArchiveSpendingRepositoryMockRecorder) AddSpending(ctx, payload a
 }
 
 // GetWeekSpendings mocks base method.
-func (m *MockIArchiveSpendingRepository) GetWeekSpendings(ctx context.Context, date time.Time) (*domain.WeekSpendings, error) {
+func (m *MockIArchiveSpendingRepository) GetWeekSpendings(ctx context.Context, week []string) (*domain.WeekSpendings, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetWeekSpendings", ctx, date)
+	ret := m.ctrl.Call(m, "GetWeekSpendings", ctx, week)
 	ret0, _ := ret[0].(*domain.WeekSpendings)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetWeekSpendings indicates an expected call of GetWeekSpendings.
-func (mr *MockIArchiveSpendingRepositoryMockRecorder) GetWeekSpendings(ctx, date any) *gomock.Call {
+func (mr *MockIArchiveSpendingRepositoryMockRecorder) GetWeekSpendings(ctx, week any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetWeekSpendings", reflect.TypeOf((*MockIArchiveSpendingRepository)(nil).GetWeekSpendings), ctx, date)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetWeekSpendings", reflect.TypeOf((*MockIArchiveSpendingRepository)(nil).GetWeekSpendings), ctx, week)
 }

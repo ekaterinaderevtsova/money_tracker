@@ -39,41 +39,22 @@ func (sr *ArchiveSpendingRepository) AddSpending(ctx context.Context, payload *d
 	return nil
 }
 
-// func (sr *ArchiveSpendingRepository) getDaySpendings(ctx context.Context, date time.Time) (int32, error) {
-// 	var total int32
-// 	year := date.Year()
-// 	month := date.Month()
-// 	day := date.Day()
-
-// 	err := sr.db.QueryRow(ctx, `
-// 		SELECT SUM(sum)
-// 		FROM spendings
-// 		WHERE EXTRACT(YEAR FROM date) = $1
-// 		AND EXTRACT(MONTH FROM date) = $2
-// 		AND EXTRACT(DAY FROM date) = $3;
-// 		`, year, month, day).Scan(&total)
-// 	if err != nil {
-// 		return 0, err
-// 	}
-// 	return total, nil
-// }
-
-func (sr *ArchiveSpendingRepository) GetWeekSpendings(ctx context.Context, date time.Time) (*domain.WeekSpendings, error) {
+func (sr *ArchiveSpendingRepository) GetWeekSpendings(ctx context.Context, week []string) (*domain.WeekSpendings, error) {
 	var weekSpendings domain.WeekSpendings
-	date = date.UTC()
-	today := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, time.UTC)
+	// date = date.UTC()
+	// today := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, time.UTC)
 
-	daysSinceMonday := (today.Weekday() - time.Monday) % 7
-	if daysSinceMonday < 0 {
-		daysSinceMonday += 7 // Ensure non-negative
-	}
-	startOfWeek := today.AddDate(0, 0, -int(daysSinceMonday))
+	// daysSinceMonday := (today.Weekday() - time.Monday) % 7
+	// if daysSinceMonday < 0 {
+	// 	daysSinceMonday += 7 // Ensure non-negative
+	// }
+	// startOfWeek := today.AddDate(0, 0, -int(daysSinceMonday))
 
-	endOfWeek := time.Date(
-		startOfWeek.Year(), startOfWeek.Month(), startOfWeek.Day()+6,
-		23, 59, 59, 0,
-		time.UTC,
-	)
+	// endOfWeek := time.Date(
+	// 	startOfWeek.Year(), startOfWeek.Month(), startOfWeek.Day()+6,
+	// 	23, 59, 59, 0,
+	// 	time.UTC,
+	// )
 
 	rows, err := sr.db.Query(ctx, `
 	   SELECT date_series.date AS date,
@@ -82,7 +63,7 @@ func (sr *ArchiveSpendingRepository) GetWeekSpendings(ctx context.Context, date 
        LEFT JOIN spendings ON date_series.date = spendings.date
        GROUP BY date_series.date
        ORDER BY date_series.date;
-		`, startOfWeek.Format("2006-01-02"), endOfWeek.Format("2006-01-02"))
+		`, week[0], week[6])
 	if err != nil {
 		return nil, err
 	}

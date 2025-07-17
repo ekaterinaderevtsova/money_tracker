@@ -11,6 +11,7 @@ import (
 type IWeekManager interface {
 	IsCurrentWeek(date string) bool
 	GetCurrentWeek() []string
+	GetArchiveWeek(dateStr string) ([]string, error)
 	InitializeWeek(ctx context.Context) error
 	ArchiveCurrentWeek(ctx context.Context) error
 	ResetForNewWeek(ctx context.Context) error

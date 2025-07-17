@@ -144,11 +144,46 @@ func TestGetWeekSpendings(t *testing.T) {
 					Average: 1000,
 				}, nil)
 			},
-
 			expectedOutput: &domain.WeekSpendings{
 				DaySpendings: [7]domain.DaySpendings{
 					{
 						Day: time.Now().Format("2006-01-02"),
+						Sum: 1000,
+					},
+				},
+				Total:   1000,
+				Average: 1000,
+			},
+			expectedError: nil,
+		},
+		{
+			name: "archive week valid input",
+			date: "2025-07-07",
+			behaviorArchive: func(r *mocks.MockIArchiveSpendingRepository) {
+				week := []string{
+					"2025-07-07",
+					"2025-07-08",
+					"2025-07-09",
+					"2025-07-10",
+					"2025-07-11",
+					"2025-07-12",
+					"2025-07-13",
+				}
+				r.EXPECT().GetWeekSpendings(ctx, week).Return(&domain.WeekSpendings{
+					DaySpendings: [7]domain.DaySpendings{
+						{
+							Day: "2025-07-07",
+							Sum: 1000,
+						},
+					},
+					Total:   1000,
+					Average: 1000,
+				}, nil)
+			},
+			expectedOutput: &domain.WeekSpendings{
+				DaySpendings: [7]domain.DaySpendings{
+					{
+						Day: "2025-07-07",
 						Sum: 1000,
 					},
 				},

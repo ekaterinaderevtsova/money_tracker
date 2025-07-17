@@ -64,6 +64,27 @@ func (wm *WeekManager) GetCurrentWeek() []string {
 	return week
 }
 
+func (wm *WeekManager) GetArchiveWeek(dateStr string) ([]string, error) {
+	date, err := time.Parse("2006-01-02", dateStr)
+	if err != nil {
+		wm.logger.Error("failed to parse date", zap.Error(err), zap.String("date", dateStr))
+		return nil, err
+	}
+
+	daysSinceMonday := (int(date.Weekday()) + 6) % 7
+	startOfWeek := date.AddDate(0, 0, -int(daysSinceMonday))
+
+	week := make([]string, 0, 7)
+
+	for i := 0; i < 7; i++ {
+		day := startOfWeek.AddDate(0, 0, i)
+		dayStr := day.Format("2006-01-02")
+		week = append(week, dayStr)
+	}
+
+	return week, nil
+}
+
 func (wm *WeekManager) InitializeWeek(ctx context.Context) error {
 	if err := wm.currentWeekRepo.InitNewWeek(ctx, wm.currentWeek); err != nil {
 		return fmt.Errorf("failed to initialize new week in repository: %w", err)
