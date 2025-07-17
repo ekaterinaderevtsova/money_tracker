@@ -123,15 +123,7 @@ func TestGetWeekSpendings(t *testing.T) {
 			name: "current week valid input",
 			date: time.Now().Format("2006-01-02"),
 			behaviorCurrent: func(r *mocks.MockICurrentSpendingRepository) {
-				week := []string{
-					time.Now().AddDate(0, 0, -3).Format("2006-01-02"),
-					time.Now().AddDate(0, 0, -2).Format("2006-01-02"),
-					time.Now().AddDate(0, 0, -1).Format("2006-01-02"),
-					time.Now().Format("2006-01-02"),
-					time.Now().AddDate(0, 0, 1).Format("2006-01-02"),
-					time.Now().AddDate(0, 0, 2).Format("2006-01-02"),
-					time.Now().AddDate(0, 0, 3).Format("2006-01-02"),
-				}
+				week := weekManager.GetCurrentWeek()
 
 				r.EXPECT().GetWeekSpendings(ctx, week).Return(&domain.WeekSpendings{
 					DaySpendings: [7]domain.DaySpendings{
