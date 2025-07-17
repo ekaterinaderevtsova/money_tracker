@@ -1,0 +1,41 @@
+name: Run Tests
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      docker: # включаем Docker, если нужен
+        image: docker:24.0.6
+        options: --privileged
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.24.5"
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make docker-compose
+
+      - name: Create .env file for tests
+        run: |
+          cat <<EOF > tests/.env
+          DB_SOURCE=${{ secrets.DB_SOURCE }}
+
+          REDIS_ADDRESS=${{ secrets.REDIS_ADDRESS }}
+          REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+          REDIS_DB=${{ secrets.REDIS_DB }}
+          EOF
+
+      - name: Run Makefile tests
+        run: make test
