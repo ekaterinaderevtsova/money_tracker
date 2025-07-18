@@ -28,7 +28,7 @@ func main() {
 		panic(fmt.Sprintf("error initializing logger: %v", err))
 	}
 
-	config, err := config.NewConfig()
+	config, err := config.NewConfig(".env")
 	if err != nil {
 		zapLogger.Fatal("Error creating config", zap.Error(err))
 	}
@@ -54,7 +54,13 @@ func main() {
 	defer redisDb.Close()
 
 	newRepository := repository.NewRepository(ctx, db, redisDb)
-	newService := service.NewService(newRepository)
+	newService, err := service.NewService(ctx, newRepository, zapLogger)
+	if err != nil {
+		zapLogger.Fatal("Error creating service", zap.Error(err))
+	}
+	if err := newService.Start(ctx); err != nil {
+		zapLogger.Fatal("Error starting service", zap.Error(err))
+	}
 	newHTTPHandler := httpHandler.NewHTTPHandler(ctx, zapLogger, newService)
 
 	app := startHTTPServer(newHTTPHandler)

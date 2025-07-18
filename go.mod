@@ -9,10 +9,10 @@ require (
 	github.com/jackc/pgx/v5 v5.7.2
 	github.com/joho/godotenv v1.5.1
 	github.com/redis/go-redis/v9 v9.11.0
-	github.com/rs/zerolog v1.34.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.9.0
 	go.mongodb.org/mongo-driver v1.17.2
+	go.uber.org/mock v0.5.2
 	go.uber.org/zap v1.17.0
 )
 

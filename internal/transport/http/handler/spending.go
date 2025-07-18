@@ -4,24 +4,20 @@ import (
 	"context"
 	"moneytracker/internal/converter"
 	"moneytracker/internal/domain"
+	"moneytracker/internal/service"
 
 	"go.uber.org/zap"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-type ISpendingService interface {
-	AddSpending(ctx context.Context, payload *domain.DaySpendings) error
-	GetWeekSpendings(ctx context.Context, date string) (*domain.WeekSpendings, error)
-}
-
 type SpendingHandler struct {
 	ctx             context.Context
 	logger          *zap.Logger
-	spendingService ISpendingService
+	spendingService service.ISpendingService
 }
 
-func NewSpendingHandler(ctx context.Context, logger *zap.Logger, spendingService ISpendingService) *SpendingHandler {
+func NewSpendingHandler(ctx context.Context, logger *zap.Logger, spendingService service.ISpendingService) *SpendingHandler {
 	return &SpendingHandler{ctx: ctx, logger: logger, spendingService: spendingService}
 }
 

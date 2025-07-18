@@ -16,8 +16,8 @@ type Config struct {
 	// WebAppURL string `env:"WEB_APP_URL,required"`
 }
 
-func NewConfig() (*Config, error) {
-	if err := godotenv.Load(); err != nil {
+func NewConfig(filename string) (*Config, error) {
+	if err := godotenv.Load(filename); err != nil {
 		fmt.Printf("error loading .env file: %v", err)
 	}
 

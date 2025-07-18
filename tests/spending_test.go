@@ -5,24 +5,24 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"moneytracker/internal/domain"
 	"net/http"
 	"time"
+
+	"github.com/stretchr/testify/require"
 )
 
 func (s *TrackerTestSuite) TestAddAndGetCurrentWeekSpendings() {
 	addUrl := s.spendingUrl + "/spendings"
-	type DaySpendings struct {
-		Day string `json:"day"`
-		Sum int32  `json:"sum"`
-	}
 
 	today := time.Now().Format("2006-01-02")
 
-	addRequestData := DaySpendings{
+	addRequestData := domain.DaySpendings{
 		Day: today,
 		Sum: 1000,
 	}
 	jsonAddData, err := json.Marshal(addRequestData)
+	require.NoError(s.T(), err, "failed to marshal addRequestData")
 
 	req, err := http.NewRequest("POST", addUrl, bytes.NewBuffer(jsonAddData))
 	s.Require().NoError(err, "Error creating request")

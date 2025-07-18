@@ -6,3 +6,6 @@ CREATE TABLE spendings (
     sum INT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE spendings
+ADD CONSTRAINT unique_date UNIQUE (date);

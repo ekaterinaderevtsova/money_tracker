@@ -1,32 +1,20 @@
-version: "3.9"
-
 services:
-  app_test:
-    container_name: app_test
-    build:
-      context: ..
-      dockerfile: Dockerfile-test
-    ports:
-      - "8001:8000"
-    depends_on:
-      - db_test
-      - redis_test
-    networks:
-      - app-test-network
-    volumes:
-      - ../:/app
-    env_file:
-      - .env
-
   db_test:
     image: postgres:15-alpine
     container_name: db_test
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5433:5432"
-    env_file:
-      - .env
+      - "5433:5432" # Host port 5433 maps to container port 5432
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: spendings_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d spendings_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - app-test-network
 
