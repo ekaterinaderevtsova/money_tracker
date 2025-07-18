@@ -171,7 +171,7 @@ func (s *TrackerTestSuite) startTestServer(ready chan<- bool) {
 }
 
 func (s *TrackerTestSuite) initConfig() {
-	appConfig, err := config.NewConfig()
+	appConfig, err := config.NewConfig(".env.test")
 	if err != nil {
 		s.FailNowf("error config init: %s", err.Error())
 	}

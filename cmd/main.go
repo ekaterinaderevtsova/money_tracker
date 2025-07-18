@@ -28,7 +28,7 @@ func main() {
 		panic(fmt.Sprintf("error initializing logger: %v", err))
 	}
 
-	config, err := config.NewConfig()
+	config, err := config.NewConfig(".env")
 	if err != nil {
 		zapLogger.Fatal("Error creating config", zap.Error(err))
 	}
