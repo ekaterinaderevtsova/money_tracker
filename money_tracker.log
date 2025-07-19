@@ -1,4 +1,0 @@
-{"level":"fatal","time":"2025-07-05T17:46:32.865+0200","message":"Error executing migrations","error":"failed to open database: dial tcp: lookup spendings_db: no such host"}
-{"level":"fatal","time":"2025-07-05T17:46:57.518+0200","message":"Error executing migrations","error":"failed to open database: dial tcp: lookup spendings_db: no such host"}
-{"level":"fatal","time":"2025-07-05T17:47:03.884+0200","message":"Error creating connection pool","error":"unable to ping the database: failed to connect to `user=user database=spendings_db`: hostname resolving error: lookup spendings_db: no such host"}
-{"level":"fatal","time":"2025-07-05T17:48:37.398+0200","message":"Error creating connection pool","error":"unable to ping the database: failed to connect to `user=user database=spendings_db`: hostname resolving error: lookup spendings_db: no such host"}

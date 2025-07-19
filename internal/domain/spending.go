@@ -11,7 +11,7 @@ type AddSpending struct {
 }
 
 type DaySpendings struct {
-	Day string `json:"date"`
+	Day string `json:"day"`
 	Sum int32  `json:"sum"`
 }
 
