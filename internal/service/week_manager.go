@@ -116,5 +116,13 @@ func (wm *WeekManager) ResetForNewWeek(ctx context.Context) error {
 		wm.logger.Error("failed to resent for the new week", zap.Error(err))
 		return err
 	}
+
+	wm.calculateCurrentWeek()
+
+	if err := wm.InitializeWeek(ctx); err != nil {
+		wm.logger.Error("failed to initialize new week", zap.Error(err))
+		return err
+	}
+
 	return nil
 }

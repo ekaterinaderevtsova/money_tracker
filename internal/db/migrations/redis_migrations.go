@@ -27,17 +27,26 @@ func RunRedisMigrations(ctx context.Context, redisDb *redis.Client, currentWeek 
 			totalKey := "total:" + day
 
 			// только если ключей ещё нет
-			if exists, _ := redisDb.Exists(ctx, dayKey).Result(); exists == 0 {
+			exists, err := redisDb.Exists(ctx, dayKey).Result()
+			if err != nil {
+				return fmt.Errorf("failed to check existence of %s: %w", dayKey, err)
+			}
+			if exists == 0 {
 				if err := redisDb.RPush(ctx, dayKey, 0).Err(); err != nil {
 					return fmt.Errorf("failed to init %s: %w", dayKey, err)
 				}
 			}
 
-			if exists, _ := redisDb.Exists(ctx, totalKey).Result(); exists == 0 {
+			exists, err = redisDb.Exists(ctx, totalKey).Result()
+			if err != nil {
+				return fmt.Errorf("failed to check existence of %s: %w", totalKey, err)
+			}
+			if exists == 0 {
 				if err := redisDb.Set(ctx, totalKey, 0, 0).Err(); err != nil {
 					return fmt.Errorf("failed to init %s: %w", totalKey, err)
 				}
 			}
+
 		}
 
 		if err := redisDb.Set(ctx, redisMigrationKey, "1", 0).Err(); err != nil {

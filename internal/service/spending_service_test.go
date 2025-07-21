@@ -12,17 +12,24 @@ import (
 	"go.uber.org/zap"
 )
 
-func initTestLogger() *zap.Logger {
-	logger, _ := zap.NewDevelopment()
+func initTestLogger(t *testing.T) *zap.Logger {
+	logger, err := zap.NewDevelopment()
+	if err != nil {
+		t.Fatalf("failed to initialize test logger: %v", err)
+	}
 	return logger
 }
 
 func TestAddSpending(t *testing.T) {
 	ctx := context.Background()
-	logger := initTestLogger()
+	logger := initTestLogger(t)
 	ctrl := gomock.NewController(t)
 
-	defer logger.Sync()
+	defer func() {
+		if err := logger.Sync(); err != nil {
+			t.Logf("failed to sync logger: %v", err)
+		}
+	}()
 	defer ctrl.Finish()
 
 	currentWeekRepoMock := mocks.NewMockICurrentSpendingRepository(ctrl)
@@ -93,10 +100,14 @@ func TestAddSpending(t *testing.T) {
 
 func TestGetWeekSpendings(t *testing.T) {
 	ctx := context.Background()
-	logger := initTestLogger()
+	logger := initTestLogger(t)
 	ctrl := gomock.NewController(t)
 
-	defer logger.Sync()
+	defer func() {
+		if err := logger.Sync(); err != nil {
+			t.Logf("failed to sync logger: %v", err)
+		}
+	}()
 	defer ctrl.Finish()
 
 	currentWeekRepoMock := mocks.NewMockICurrentSpendingRepository(ctrl)

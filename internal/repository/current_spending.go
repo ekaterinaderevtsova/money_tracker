@@ -99,7 +99,10 @@ func (sr *CurrentSpendingRepository) GetWeekSpendings(ctx context.Context, week 
 			continue
 		}
 
-		sum, _ := strconv.Atoi(sumStr)
+		sum, err := strconv.Atoi(sumStr)
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert sumStr %q to int: %w", sumStr, err)
+		}
 
 		weekSpendings.DaySpendings[i] = domain.DaySpendings{
 			Day: day,
