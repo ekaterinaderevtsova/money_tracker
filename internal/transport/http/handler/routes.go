@@ -1,11 +1,19 @@
 package handler
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+)
 
 func (h *HTTPHandler) SetSpendingRoutes(router fiber.Router) {
-	spendings := router.Group("/spending/spendings")
+	authGroup := router.Group("/auth")
+
+	authGroup.Post("/login", h.AuthHandler.Login)
+	authGroup.Post("/refresh", h.AuthHandler.Refresh)
+
+	spendingsGroup := router.Group("/spending/spendings")
+	spendingsGroup.Use(JWTMiddleware)
 	{
-		spendings.Get("", h.SpendingHandler.GetWeekSpendings)
-		spendings.Post("", h.SpendingHandler.AddSpending)
+		spendingsGroup.Get("", h.SpendingHandler.GetWeekSpendings)
+		spendingsGroup.Post("", h.SpendingHandler.AddSpending)
 	}
 }

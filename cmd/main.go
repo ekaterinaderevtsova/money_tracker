@@ -87,7 +87,7 @@ func startHTTPServer(handler *httpHandler.HTTPHandler) *fiber.App {
 	//	app.Use(logger)
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "https://myspendingstracker.netlify.app, http://localhost:5173, http://localhost:4173, http://localhost:3004",
+		AllowOrigins:     "https://myspendingstracker.netlify.app",
 		AllowMethods:     "GET,POST,PUT,DELETE,PATCH,OPTIONS",
 		AllowHeaders:     "Origin,Content-Type,Accept,Authorization,ngrok-skip-browser-warning",
 		AllowCredentials: true,

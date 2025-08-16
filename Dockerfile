@@ -5,8 +5,8 @@ RUN go mod download
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o main cmd/main.go
 
-FROM debian:bullseye-slim
-WORKDIR /app
+FROM alpine:3.20
+WORKDIR /root/
 COPY --from=builder /app/main .
 COPY internal/db/migrations ./internal/db/migrations
 CMD ["./main"]
