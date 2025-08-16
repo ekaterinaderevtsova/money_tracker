@@ -18,19 +18,8 @@ services:
     networks:
       - app-test-network
 
-  redis_test:
-    image: redis:7.2-alpine
-    container_name: redis_test
-    volumes:
-      - redis-data:/data
-    ports:
-      - "6379:6379"
-    networks:
-      - app-test-network
-
 volumes:
   postgres_data:
-  redis-data:
 
 networks:
   app-test-network:

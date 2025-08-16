@@ -5,29 +5,21 @@ import (
 	"moneytracker/internal/domain"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/redis/go-redis/v9"
 )
 
-type ICurrentSpendingRepository interface {
-	InitNewWeek(ctx context.Context, week []string) error
-	FlushAll(ctx context.Context) error
-	AddSpending(ctx context.Context, payload *domain.DaySpendings) error
-	GetWeekSpendings(ctx context.Context, week []string) (*domain.WeekSpendings, error)
-}
+//go:generate mockgen -source=repository.go -destination=mocks/mock.go
 
-type IArchiveSpendingRepository interface {
-	AddSpending(ctx context.Context, payload *domain.DaySpendings) error
-	GetWeekSpendings(ctx context.Context, week []string) (*domain.WeekSpendings, error)
+type IExpenseRepository interface {
+	AddExpense(ctx context.Context, payload *domain.DailyExpense) error
+	GetWeeklyExpenses(ctx context.Context, week []string) (*domain.WeeklyExpense, error)
 }
 
 type Repository struct {
-	IArchiveSpendingRepository
-	ICurrentSpendingRepository
+	ExpenseRepository IExpenseRepository
 }
 
-func NewRepository(ctx context.Context, db *pgxpool.Pool, redisDb *redis.Client) *Repository {
+func NewRepository(db *pgxpool.Pool) *Repository {
 	return &Repository{
-		IArchiveSpendingRepository: NewArchiveSpendingRepository(db),
-		ICurrentSpendingRepository: NewCurrentSpendingRepository(redisDb),
+		ExpenseRepository: NeExpenseRepository(db),
 	}
 }

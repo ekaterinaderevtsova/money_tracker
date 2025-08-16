@@ -10,10 +10,10 @@ func (h *HTTPHandler) SetSpendingRoutes(router fiber.Router) {
 	authGroup.Post("/login", h.AuthHandler.Login)
 	authGroup.Post("/refresh", h.AuthHandler.Refresh)
 
-	spendingsGroup := router.Group("/spending/spendings")
-	spendingsGroup.Use(JWTMiddleware)
+	expenseGroup := router.Group("/expenses")
+	expenseGroup.Use(JWTMiddleware)
 	{
-		spendingsGroup.Get("", h.SpendingHandler.GetWeekSpendings)
-		spendingsGroup.Post("", h.SpendingHandler.AddSpending)
+		expenseGroup.Get("/weekly", h.ExpenseHandler.GetWeeklyExpenses)
+		expenseGroup.Post("", h.ExpenseHandler.AddExpense)
 	}
 }

@@ -5,7 +5,7 @@ import (
 	"moneytracker/internal/config"
 	"moneytracker/internal/repository"
 	"moneytracker/internal/service"
-	httpHandler "moneytracker/internal/transport/http/handler"
+	httpHandler "moneytracker/internal/transport/handler"
 	"moneytracker/pkg/database"
 	"moneytracker/pkg/logger"
 	"os/signal"
@@ -47,21 +47,13 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	redisDb, err := database.NewRedisConn(ctx, config.RedisAddress, config.RedisPassword)
-	if err != nil {
-		zapLogger.Fatal("Error creating redis connection", zap.Error(err))
-	}
-	defer redisDb.Close()
-
-	newRepository := repository.NewRepository(ctx, db, redisDb)
-	newService, err := service.NewService(ctx, newRepository, zapLogger)
+	newRepository := repository.NewRepository(db)
+	newService := service.NewService(newRepository, zapLogger)
 	if err != nil {
 		zapLogger.Fatal("Error creating service", zap.Error(err))
 	}
-	if err := newService.Start(ctx); err != nil {
-		zapLogger.Fatal("Error starting service", zap.Error(err))
-	}
-	newHTTPHandler := httpHandler.NewHTTPHandler(ctx, zapLogger, newService)
+
+	newHTTPHandler := httpHandler.NewHTTPHandler(ctx, newService)
 
 	app := startHTTPServer(newHTTPHandler)
 

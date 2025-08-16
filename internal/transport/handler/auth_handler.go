@@ -1,21 +1,19 @@
 package handler
 
 import (
-	httpdto "moneytracker/internal/transport/http/dto"
+	httpdto "moneytracker/internal/transport/dto"
 	"os"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
-	"go.uber.org/zap"
 )
 
 type AuthHandler struct {
-	logger *zap.Logger
 }
 
-func NewAuthHandler(logger *zap.Logger) *AuthHandler {
-	return &AuthHandler{logger: logger}
+func NewAuthHandler() *AuthHandler {
+	return &AuthHandler{}
 }
 
 func (h *AuthHandler) Login(c *fiber.Ctx) error {
@@ -23,7 +21,6 @@ func (h *AuthHandler) Login(c *fiber.Ctx) error {
 	var credentials httpdto.Credentials
 
 	if err := c.BodyParser(&credentials); err != nil {
-		h.logger.Error("failed to parse credential", zap.Error(err))
 		return c.Status(fiber.StatusBadRequest).JSON(httpdto.ErrorResponse{
 			Error: "failed to parse credentials",
 		})
@@ -34,12 +31,6 @@ func (h *AuthHandler) Login(c *fiber.Ctx) error {
 	expectedPassword := os.Getenv("APP_PASSWORD")
 
 	if credentials.Login != expectedLogin || credentials.Password != expectedPassword {
-		h.logger.Error("invalid credentials",
-			zap.String("received login", credentials.Login),
-			zap.String("expected login", expectedLogin),
-			zap.String("received password", credentials.Password),
-			zap.String("expected password", expectedPassword),
-		)
 		return c.Status(fiber.StatusUnauthorized).JSON(httpdto.ErrorResponse{
 			Error: "invalid credentials",
 		})
@@ -47,7 +38,6 @@ func (h *AuthHandler) Login(c *fiber.Ctx) error {
 
 	accessToken, err := generateToken(false, time.Now().Add(httpdto.AccessTokenDuration).Unix())
 	if err != nil {
-		h.logger.Error("failed to generate token", zap.Error(err))
 		return c.Status(fiber.StatusInternalServerError).JSON(httpdto.ErrorResponse{
 			Error: "failed to generate access token",
 		})
@@ -55,21 +45,19 @@ func (h *AuthHandler) Login(c *fiber.Ctx) error {
 
 	refreshToken, err := generateToken(true, time.Now().Add(httpdto.RefreshTokenDuration).Unix())
 	if err != nil {
-		h.logger.Error("failed to generate token", zap.Error(err))
 		return c.Status(fiber.StatusInternalServerError).JSON(httpdto.ErrorResponse{
 			Error: "failed to generate refresh token",
 		})
 	}
 
-	// Set refresh token as an HTTP-only cookie
 	c.Cookie(&fiber.Cookie{
 		Name:     "refresh_token",
 		Value:    refreshToken,
-		HTTPOnly: true, // not accessible via JS
-		Secure:   false,
-		SameSite: "Lax",            // or "Lax" depending on your needs
-		Path:     "/",              // root path
-		MaxAge:   60 * 60 * 24 * 7, // 7 days in seconds
+		HTTPOnly: true,
+		Secure:   true,
+		SameSite: "Lax",
+		Path:     "/",
+		MaxAge:   60 * 60 * 24 * 7,
 	})
 
 	return c.JSON(httpdto.TokenResponse{

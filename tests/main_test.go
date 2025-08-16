@@ -6,7 +6,7 @@ import (
 	"moneytracker/internal/config"
 	"moneytracker/internal/repository"
 	"moneytracker/internal/service"
-	"moneytracker/internal/transport/http/handler"
+	"moneytracker/internal/transport/handler"
 	"moneytracker/pkg/database"
 	"moneytracker/pkg/logger"
 
@@ -14,12 +14,10 @@ import (
 	"testing"
 	"time"
 
-	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/suite"
 )
@@ -27,9 +25,9 @@ import (
 type TrackerTestSuite struct {
 	suite.Suite
 	config       *config.Config
-	redis        *redis.Client
 	db           *pgxpool.Pool
-	spendingUrl  string
+	loginURL     string
+	expensesURL  string
 	app          *fiber.App
 	serverCancel context.CancelFunc
 }
@@ -51,7 +49,8 @@ func TestMain(m *testing.M) {
 // Вызывается один раз перед всеми тестами, где выполняются «тяжелые» операции (миграции, запуск сервера).
 func (s *TrackerTestSuite) SetupSuite() {
 	s.initConfig()
-	s.spendingUrl = "http://localhost:8000/spending"
+	s.expensesURL = "http://localhost:8000/expenses"
+	s.loginURL = "http://localhost:8000/auth/login"
 	s.initDBConnections()
 
 	// Run migrations
@@ -64,7 +63,6 @@ func (s *TrackerTestSuite) SetupSuite() {
 }
 
 func (s *TrackerTestSuite) TearDownSuite() {
-	s.redis.Close()
 	s.dropTables()
 	s.db.Close()
 }
@@ -89,8 +87,6 @@ func (s *TrackerTestSuite) dropTables() {
 
 // Вызывается перед каждым тестом — создание изолированного окружения.
 func (s *TrackerTestSuite) SetupTest() {
-	// s.populateRedis()
-
 	ready := make(chan bool)
 	s.startTestServer(ready)
 
@@ -112,7 +108,6 @@ func (s *TrackerTestSuite) TearDownTest() {
 	}
 
 	s.cleanupDb()
-	s.cleanupRedis()
 }
 
 type TestDeviceCloud struct {
@@ -130,15 +125,10 @@ func (s *TrackerTestSuite) startTestServer(ready chan<- bool) {
 	if err != nil {
 		panic(fmt.Sprintf("error initializing logger: %v", err))
 	}
-	repo := repository.NewRepository(ctx, s.db, s.redis)
-	service, err := service.NewService(ctx, repo, zapLogger)
-	if err != nil {
-		zapLogger.Fatal("Error creating service", zap.Error(err))
-	}
-	if err := service.Start(ctx); err != nil {
-		zapLogger.Fatal("Error starting service", zap.Error(err))
-	}
-	handler := handler.NewHTTPHandler(ctx, zapLogger, service)
+	repo := repository.NewRepository(s.db)
+	service := service.NewService(repo, zapLogger)
+
+	handler := handler.NewHTTPHandler(ctx, service)
 
 	app := fiber.New(fiber.Config{
 		DisableStartupMessage: true, // Reduce noise in tests
@@ -185,12 +175,6 @@ func (s *TrackerTestSuite) initDBConnections() {
 		s.FailNow("postgres initialization error", err)
 	}
 	s.db = dbConn
-
-	redisConn, err := database.NewRedisConn(context.Background(), s.config.RedisAddress, s.config.RedisPassword)
-	if err != nil {
-		s.FailNow("redis initialization error", err)
-	}
-	s.redis = redisConn
 }
 
 func (s *TrackerTestSuite) runMigrations() error {
@@ -207,11 +191,4 @@ func (s *TrackerTestSuite) runMigrations() error {
 	}
 
 	return nil
-}
-
-func (s *TrackerTestSuite) cleanupRedis() {
-	err := s.redis.FlushAll(context.Background()).Err()
-	if err != nil {
-		s.FailNow("Failed to clean redis", err)
-	}
 }
