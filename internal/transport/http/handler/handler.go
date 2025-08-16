@@ -9,10 +9,12 @@ import (
 
 type HTTPHandler struct {
 	SpendingHandler *SpendingHandler
+	AuthHandler     *AuthHandler
 }
 
 func NewHTTPHandler(ctx context.Context, logger *zap.Logger, service *service.Service) *HTTPHandler {
 	return &HTTPHandler{
 		SpendingHandler: NewSpendingHandler(ctx, logger, service.ISpendingService),
+		AuthHandler:     NewAuthHandler(logger),
 	}
 }
