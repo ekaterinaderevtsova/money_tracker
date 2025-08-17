@@ -1,0 +1,75 @@
+package repository
+
+import (
+	"context"
+	"fmt"
+	"moneytracker/internal/domain"
+	"time"
+
+	"github.com/jackc/pgx/v5/pgxpool"
+)
+
+type ExpenseRepository struct {
+	db *pgxpool.Pool
+}
+
+func NeExpenseRepository(db *pgxpool.Pool) *ExpenseRepository {
+	return &ExpenseRepository{
+		db: db,
+	}
+}
+
+func (sr *ExpenseRepository) AddExpense(ctx context.Context, payload *domain.DailyExpense) error {
+	date, err := time.Parse("2006-01-02", payload.Date)
+	if err != nil {
+		return fmt.Errorf("invalid date format: %w", err)
+	}
+
+	_, err = sr.db.Exec(ctx, `
+		INSERT INTO spendings (date, sum)
+		VALUES ($1, $2)
+		ON CONFLICT (date)
+		DO UPDATE SET sum = spendings.sum + EXCLUDED.sum
+	`, date, payload.Amount)
+
+	if err != nil {
+		return fmt.Errorf("failed to insert/update spending: %w", err)
+	}
+
+	return nil
+}
+
+func (sr *ExpenseRepository) GetWeeklyExpenses(ctx context.Context, week []string) (*domain.WeeklyExpense, error) {
+	var weeklyExpenses domain.WeeklyExpense
+
+	rows, err := sr.db.Query(ctx, `
+	   SELECT date_series.date AS date,
+       COALESCE(SUM(spendings.sum), 0) AS total
+       FROM generate_series($1::date, $2::date, '1 day'::interval) AS date_series
+       LEFT JOIN spendings ON date_series.date = spendings.date
+       GROUP BY date_series.date
+       ORDER BY date_series.date;
+		`, week[0], week[6])
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	i := 0
+	for rows.Next() {
+		var dayExpenses domain.DailyExpense
+		var date time.Time
+		err := rows.Scan(&date, &dayExpenses.Amount)
+		if err != nil {
+			return nil, err
+		}
+		dayExpenses.Date = date.Format("02-01")
+		weeklyExpenses.DailyExpenses[i] = dayExpenses
+		weeklyExpenses.TotalAmount += dayExpenses.Amount
+		i++
+	}
+
+	weeklyExpenses.AverageDaily = weeklyExpenses.TotalAmount / 7
+
+	return &weeklyExpenses, nil
+}

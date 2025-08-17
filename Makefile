@@ -7,3 +7,8 @@ test:
 	@sleep 30
 	@echo "Running tests..."
 	@trap 'docker compose -f tests/docker-compose.yml down -v' EXIT; go test -v -count=1 ./tests
+
+lint:
+	@echo "Linting code..."
+	golangci-lint run --fix
+	@echo "Linting completed"

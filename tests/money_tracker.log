@@ -1,3 +1,28 @@
 {"level":"info","time":"2025-07-18T11:56:50.142+0200","message":"Weekly scheduler started"}
 {"level":"info","time":"2025-07-18T11:56:50.248+0200","message":"New spending added","date":"2025-07-18","added spending":1000}
 {"level":"info","time":"2025-07-18T11:56:50.253+0200","message":"New spending added","date":"2025-07-18","added spending":1000}
+{"level":"error","time":"2025-08-16T21:36:59.011+0200","message":"Error adding spending to db","error":"failed to insert/update spending: ERROR: there is no unique or exclusion constraint matching the ON CONFLICT specification (SQLSTATE 42P10)","date":"2025-08-16","spending":1000}
+{"level":"info","time":"2025-08-16T21:38:43.488+0200","message":"New spending added","date":"2025-08-16","added spending":1000}
+{"level":"info","time":"2025-08-16T21:38:43.490+0200","message":"New spending added","date":"2025-08-16","added spending":1000}
+{"level":"info","time":"2025-08-16T21:45:49.159+0200","message":"New spending added","date":"2025-08-16","added spending":1000}
+{"level":"info","time":"2025-08-16T21:45:49.163+0200","message":"New spending added","date":"2025-08-16","added spending":1000}
+{"level":"info","time":"2025-08-16T21:47:32.450+0200","message":"New spending added","date":"2025-08-16","added spending":1000}
+{"level":"info","time":"2025-08-16T21:47:32.452+0200","message":"New spending added","date":"2025-08-16","added spending":1000}
+{"level":"info","time":"2025-08-16T21:48:46.489+0200","message":"New spending added","date":"2025-08-16","added spending":1000}
+{"level":"info","time":"2025-08-16T21:48:46.494+0200","message":"New spending added","date":"2025-08-16","added spending":1000}
+{"level":"info","time":"2025-08-16T22:03:33.876+0200","message":"New spending added","date":"2025-08-16","added spending":1000}
+{"level":"info","time":"2025-08-16T22:03:33.880+0200","message":"New spending added","date":"2025-08-16","added spending":1000}
+{"level":"info","time":"2025-08-16T22:11:26.026+0200","message":"New spending added","date":"2025-08-16","added spending":1000}
+{"level":"info","time":"2025-08-16T22:11:26.029+0200","message":"New spending added","date":"2025-08-16","added spending":1000}
+{"level":"info","time":"2025-08-16T22:15:33.012+0200","message":"New spending added","date":"2025-08-16","added spending":1000}
+{"level":"info","time":"2025-08-16T22:15:33.014+0200","message":"New spending added","date":"2025-08-16","added spending":1000}
+{"level":"info","time":"2025-08-16T22:23:58.064+0200","message":"New spending added","date":"2025-08-16","added spending":1000}
+{"level":"info","time":"2025-08-16T22:23:58.067+0200","message":"New spending added","date":"2025-08-16","added spending":1000}
+{"level":"info","time":"2025-08-16T22:25:41.172+0200","message":"New spending added","date":"2025-08-16","added spending":1000}
+{"level":"info","time":"2025-08-16T22:25:41.175+0200","message":"New spending added","date":"2025-08-16","added spending":1000}
+{"level":"info","time":"2025-08-17T00:03:45.438+0200","message":"New expense added","date":"2025-08-17","amount":1000}
+{"level":"info","time":"2025-08-17T00:03:45.441+0200","message":"New expense added","date":"2025-08-17","amount":1000}
+{"level":"info","time":"2025-08-17T00:36:26.432+0200","message":"New expense added","date":"2025-08-17","amount":1000}
+{"level":"info","time":"2025-08-17T00:36:26.438+0200","message":"New expense added","date":"2025-08-17","amount":1000}
+{"level":"info","time":"2025-08-17T00:41:01.412+0200","message":"New expense added","date":"2025-08-17","amount":1000}
+{"level":"info","time":"2025-08-17T00:41:01.415+0200","message":"New expense added","date":"2025-08-17","amount":1000}

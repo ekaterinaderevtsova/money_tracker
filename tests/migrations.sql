@@ -7,3 +7,6 @@ CREATE TABLE spendings (
 	created_at timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	CONSTRAINT spendings_pkey PRIMARY KEY (uuid)
 );
+
+ALTER TABLE spendings
+ADD CONSTRAINT unique_date UNIQUE (date);
