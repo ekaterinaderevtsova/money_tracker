@@ -55,9 +55,10 @@ func (h *AuthHandler) Login(c *fiber.Ctx) error {
 		Value:    refreshToken,
 		HTTPOnly: true,
 		Secure:   true,
-		SameSite: "Lax",
+		SameSite: "None",
 		Path:     "/",
 		MaxAge:   60 * 60 * 24 * 7,
+		Expires:  time.Now().Add(7 * 24 * time.Hour),
 	})
 
 	return c.JSON(httpdto.TokenResponse{

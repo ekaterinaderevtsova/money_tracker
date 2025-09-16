@@ -5,6 +5,13 @@ import (
 	httpdto "moneytracker/internal/transport/dto"
 )
 
+func ToDailyExpenseDomain(dtoDailyExpense *httpdto.DailyExpense) *domain.DailyExpense {
+	return &domain.DailyExpense{
+		Date:   dtoDailyExpense.Date,
+		Amount: dtoDailyExpense.Amount,
+	}
+}
+
 func ToWeeklyExpenseSummaryHTTPResponse(domainWeeklyExpenses *domain.WeeklyExpense) *httpdto.WeeklyExpense {
 	daysOfWeek := [7]string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}
 

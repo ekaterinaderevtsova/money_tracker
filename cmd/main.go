@@ -85,7 +85,9 @@ func startHTTPServer(handler *httpHandler.HTTPHandler) *fiber.App {
 		AllowCredentials: true,
 	}))
 
-	handler.SetSpendingRoutes(app)
-
+	moneyTrackerGroup := app.Group("/money-tracker")
+	{
+		handler.SetSpendingRoutes(moneyTrackerGroup)
+	}
 	return app
 }

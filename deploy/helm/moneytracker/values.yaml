@@ -1,0 +1,15 @@
+replicaCount: 1
+
+image:
+  repository: moon1it/money_tracker
+  tag: latest
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
+
+envFrom:
+  secretRef:
+    name: moneytracker-secret

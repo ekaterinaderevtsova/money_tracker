@@ -3,8 +3,8 @@ package handler
 import (
 	"context"
 	"moneytracker/internal/converter"
-	"moneytracker/internal/domain"
 	"moneytracker/internal/service"
+	httpdto "moneytracker/internal/transport/dto"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -19,12 +19,12 @@ func NewExpenseHandler(ctx context.Context, expenseService service.IExpenseServi
 }
 
 func (sh *ExpenseHandler) AddExpense(c *fiber.Ctx) error {
-	payload := new(domain.DailyExpense)
+	payload := new(httpdto.DailyExpense)
 	if err := c.BodyParser(payload); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON("failed to parse input")
 	}
 
-	err := sh.expenseService.AddExpense(sh.ctx, payload)
+	err := sh.expenseService.AddExpense(sh.ctx, converter.ToDailyExpenseDomain(payload))
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON("failed to add spending")
 	}

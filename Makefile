@@ -12,3 +12,13 @@ lint:
 	@echo "Linting code..."
 	golangci-lint run --fix
 	@echo "Linting completed"
+
+money-tracker-deploy:
+	helm upgrade --install moneytracker ./deploy/helm/moneytracker \
+	   	-n default \
+	   	-f ./deploy/helm/moneytracker/values.yaml \
+	   	-f ./deploy/helm/moneytracker/prod-values-secrets.yaml
+
+
+upload-images:
+	docker buildx build --platform linux/amd64 -t moon1it/money_tracker:latest --push ./
