@@ -28,14 +28,20 @@ func (sr *ExpenseRepository) AddExpense(ctx context.Context, payload *domain.Dai
 	_, err = sr.db.Exec(ctx, `
 		INSERT INTO spendings (date, sum)
 		VALUES ($1, $2)
-		ON CONFLICT (date)
-		DO UPDATE SET sum = spendings.sum + EXCLUDED.sum
 	`, date, payload.Amount)
 
 	if err != nil {
 		return fmt.Errorf("failed to insert/update spending: %w", err)
 	}
 
+	return nil
+}
+
+func (sr *ExpenseRepository) DeleteExpensesByDate(ctx context.Context, date string) error {
+	_, err := sr.db.Exec(ctx, `DELETE FROM spendings WHERE date = $1::date`, date)
+	if err != nil {
+		return fmt.Errorf("failed to delete spendings: %w", err)
+	}
 	return nil
 }
 
@@ -63,7 +69,7 @@ func (sr *ExpenseRepository) GetWeeklyExpenses(ctx context.Context, week []strin
 		if err != nil {
 			return nil, err
 		}
-		dayExpenses.Date = date.Format("02-01")
+		dayExpenses.Date = date.Format("02-01-2006")
 		weeklyExpenses.DailyExpenses[i] = dayExpenses
 		weeklyExpenses.TotalAmount += dayExpenses.Amount
 		i++

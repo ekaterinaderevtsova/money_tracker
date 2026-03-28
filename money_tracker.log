@@ -1,0 +1,57 @@
+{"level":"fatal","time":"2026-03-28T18:25:42.556+0100","message":"Error executing migrations","error":"failed to open database: dial tcp: lookup db: no such host"}
+{"level":"info","time":"2026-03-28T18:27:37.276+0100","message":"Service stopped"}
+{"level":"fatal","time":"2026-03-28T18:28:26.230+0100","message":"Error executing migrations","error":"failed to open database: dial tcp: lookup db: no such host"}
+{"level":"fatal","time":"2026-03-28T18:29:55.781+0100","message":"Error executing migrations","error":"failed to open database: dial tcp: lookup db: no such host"}
+{"level":"fatal","time":"2026-03-28T18:30:48.943+0100","message":"Error executing migrations","error":"failed to open database: dial tcp: lookup db: no such host"}
+{"level":"error","time":"2026-03-28T18:34:13.275+0100","message":"Error adding expense to db","error":"invalid date format: parsing time \"\" as \"2006-01-02\": cannot parse \"\" as \"2006\"","date":"","amount":0}
+{"level":"error","time":"2026-03-28T18:34:16.012+0100","message":"Error adding expense to db","error":"invalid date format: parsing time \"\" as \"2006-01-02\": cannot parse \"\" as \"2006\"","date":"","amount":0}
+{"level":"error","time":"2026-03-28T18:35:17.385+0100","message":"Error adding expense to db","error":"invalid date format: parsing time \"\" as \"2006-01-02\": cannot parse \"\" as \"2006\"","date":"","amount":0}
+{"level":"error","time":"2026-03-28T18:35:52.918+0100","message":"Error adding expense to db","error":"invalid date format: parsing time \"\" as \"2006-01-02\": cannot parse \"\" as \"2006\"","date":"","amount":0}
+{"level":"info","time":"2026-03-28T18:36:19.021+0100","message":"New expense added","date":"2026-03-28","amount":400}
+{"level":"info","time":"2026-03-28T18:36:52.719+0100","message":"New expense added","date":"2026-03-28","amount":2820}
+{"level":"info","time":"2026-03-28T18:58:35.622+0100","message":"New expense added","date":"2026-03-27","amount":1610}
+{"level":"info","time":"2026-03-28T18:58:42.784+0100","message":"New expense added","date":"2026-03-27","amount":727}
+{"level":"info","time":"2026-03-28T18:58:54.084+0100","message":"New expense added","date":"2026-03-27","amount":1534}
+{"level":"info","time":"2026-03-28T18:59:08.923+0100","message":"New expense added","date":"2026-03-26","amount":2200}
+{"level":"info","time":"2026-03-28T19:02:10.214+0100","message":"New expense added","date":"2026-03-25","amount":2243}
+{"level":"info","time":"2026-03-28T19:02:15.283+0100","message":"New expense added","date":"2026-03-25","amount":1833}
+{"level":"info","time":"2026-03-28T19:05:49.961+0100","message":"New expense added","date":"2026-03-23","amount":3800}
+{"level":"info","time":"2026-03-28T19:06:02.036+0100","message":"New expense added","date":"2026-03-23","amount":2700}
+{"level":"info","time":"2026-03-28T19:06:10.719+0100","message":"New expense added","date":"2026-03-22","amount":2800}
+{"level":"info","time":"2026-03-28T19:06:22.549+0100","message":"New expense added","date":"2026-03-21","amount":1890}
+{"level":"info","time":"2026-03-28T19:06:34.747+0100","message":"New expense added","date":"2026-03-20","amount":2657}
+{"level":"info","time":"2026-03-28T19:06:39.016+0100","message":"New expense added","date":"2026-03-20","amount":3155}
+{"level":"info","time":"2026-03-28T19:25:13.883+0100","message":"New expense added","date":"2026-03-23","amount":5500}
+{"level":"info","time":"2026-03-28T19:25:19.280+0100","message":"New expense added","date":"2026-03-23","amount":3800}
+{"level":"info","time":"2026-03-28T19:25:34.030+0100","message":"New expense added","date":"2026-03-21","amount":2049}
+{"level":"info","time":"2026-03-28T19:25:53.764+0100","message":"New expense added","date":"2026-03-20","amount":2149}
+{"level":"info","time":"2026-03-28T19:26:06.899+0100","message":"New expense added","date":"2026-03-19","amount":2838}
+{"level":"info","time":"2026-03-28T19:26:14.747+0100","message":"New expense added","date":"2026-03-18","amount":2265}
+{"level":"info","time":"2026-03-28T19:26:21.011+0100","message":"New expense added","date":"2026-03-18","amount":1970}
+{"level":"info","time":"2026-03-28T19:26:27.896+0100","message":"New expense added","date":"2026-03-17","amount":1943}
+{"level":"info","time":"2026-03-28T19:26:31.930+0100","message":"New expense added","date":"2026-03-17","amount":847}
+{"level":"info","time":"2026-03-28T19:26:40.079+0100","message":"New expense added","date":"2026-03-16","amount":2905}
+{"level":"info","time":"2026-03-28T19:26:43.280+0100","message":"New expense added","date":"2026-03-16","amount":1710}
+{"level":"info","time":"2026-03-28T19:26:50.778+0100","message":"New expense added","date":"2026-03-16","amount":2742}
+{"level":"info","time":"2026-03-29T00:02:02.923+0100","message":"New expense added","date":"2026-03-14","amount":2679}
+{"level":"info","time":"2026-03-29T00:04:33.640+0100","message":"Service stopped"}
+{"level":"info","time":"2026-03-29T00:05:09.843+0100","message":"New expense added","date":"2026-03-29","amount":100}
+{"level":"info","time":"2026-03-29T00:05:12.449+0100","message":"New expense added","date":"2026-03-29","amount":100}
+{"level":"info","time":"2026-03-29T00:24:17.243+0100","message":"Service stopped"}
+{"level":"info","time":"2026-03-29T00:27:45.997+0100","message":"New expense added","date":"2026-03-29","amount":100}
+{"level":"error","time":"2026-03-29T00:27:47.237+0100","message":"Error deleting expenses by date","error":"failed to delete spendings: ERROR: invalid input syntax for type date: \"29-03\" (SQLSTATE 22007)","date":"29-03"}
+{"level":"error","time":"2026-03-29T00:28:01.093+0100","message":"Error deleting expenses by date","error":"failed to delete spendings: ERROR: invalid input syntax for type date: \"29-03\" (SQLSTATE 22007)","date":"29-03"}
+{"level":"error","time":"2026-03-29T00:28:01.930+0100","message":"Error deleting expenses by date","error":"failed to delete spendings: ERROR: invalid input syntax for type date: \"29-03\" (SQLSTATE 22007)","date":"29-03"}
+{"level":"error","time":"2026-03-29T00:29:43.531+0100","message":"Error deleting expenses by date","error":"failed to delete spendings: ERROR: invalid input syntax for type date: \"29-03\" (SQLSTATE 22007)","date":"29-03"}
+{"level":"info","time":"2026-03-29T00:29:49.907+0100","message":"Service stopped"}
+{"level":"error","time":"2026-03-29T00:29:55.107+0100","message":"Error deleting expenses by date","error":"failed to delete spendings: ERROR: invalid input syntax for type date: \"29-03\" (SQLSTATE 22007)","date":"29-03"}
+{"level":"info","time":"2026-03-29T00:30:06.648+0100","message":"Service stopped"}
+{"level":"error","time":"2026-03-29T00:30:11.323+0100","message":"Error deleting expenses by date","error":"failed to delete spendings: ERROR: invalid input syntax for type date: \"29-03\" (SQLSTATE 22007)","date":"29-03"}
+{"level":"error","time":"2026-03-29T00:30:35.903+0100","message":"Error deleting expenses by date","error":"failed to delete spendings: ERROR: invalid input syntax for type date: \"29-03\" (SQLSTATE 22007)","date":"29-03"}
+{"level":"info","time":"2026-03-29T00:33:11.198+0100","message":"Service stopped"}
+{"level":"error","time":"2026-03-29T00:33:17.061+0100","message":"Error deleting expenses by date","error":"failed to delete spendings: ERROR: invalid input syntax for type date: \"29-03\" (SQLSTATE 22007)","date":"29-03"}
+{"level":"info","time":"2026-03-29T00:36:50.148+0100","message":"Service stopped"}
+{"level":"info","time":"2026-03-29T00:38:17.574+0100","message":"Service stopped"}
+{"level":"info","time":"2026-03-29T00:41:12.714+0100","message":"Service stopped"}
+{"level":"error","time":"2026-03-29T00:42:53.920+0100","message":"failed to parse date","error":"parsing time \"28-03-2026\" as \"2006-01-02\": cannot parse \"28-03-2026\" as \"2006\"","date":"28-03-2026"}
+{"level":"error","time":"2026-03-29T00:42:53.921+0100","message":"Error getting week by date","error":"parsing time \"28-03-2026\" as \"2006-01-02\": cannot parse \"28-03-2026\" as \"2006\"","date":"28-03-2026"}

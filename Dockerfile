@@ -5,7 +5,7 @@ RUN go mod download
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o main cmd/main.go
 
-FROM alpine:3.20
+FROM alpine:3.22
 WORKDIR /root/
 COPY --from=builder /app/main .
 COPY internal/db/migrations ./internal/db/migrations

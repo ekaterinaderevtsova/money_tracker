@@ -12,8 +12,8 @@ services:
       - db
     networks:
       - app-network
-    volumes:
-      - .:/app
+    env_file:
+      - .env
 
   db:
     image: postgres:17.2-alpine3.20

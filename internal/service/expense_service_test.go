@@ -157,3 +157,54 @@ func TestGetWeekSpendings(t *testing.T) {
 		})
 	}
 }
+
+func TestDeleteExpensesByDate(t *testing.T) {
+	ctx := context.Background()
+	logger := initTestLogger(t)
+	ctrl := gomock.NewController(t)
+
+	defer func() {
+		if err := logger.Sync(); err != nil {
+			t.Logf("failed to sync logger: %v", err)
+		}
+	}()
+	defer ctrl.Finish()
+
+	mockExpenseRepo := mock_repository.NewMockIExpenseRepository(ctrl)
+	expenseService := ExpenseService{
+		expenseRepository: mockExpenseRepo,
+		logger:            logger,
+	}
+
+	type mockBehavior func(r *mock_repository.MockIExpenseRepository)
+
+	testTable := []struct {
+		name          string
+		date          string
+		behavior      mockBehavior
+		expectedError error
+	}{
+		{
+			name: "valid date",
+			date: "2025-07-07",
+			behavior: func(r *mock_repository.MockIExpenseRepository) {
+				r.EXPECT().DeleteExpensesByDate(ctx, "2025-07-07").Return(nil)
+			},
+			expectedError: nil,
+		},
+	}
+
+	for _, tt := range testTable {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.behavior != nil {
+				tt.behavior(mockExpenseRepo)
+			}
+			err := expenseService.DeleteyExpensesByDate(ctx, tt.date)
+			if tt.expectedError == nil {
+				assert.NoError(t, err)
+			} else {
+				assert.Equal(t, err, tt.expectedError)
+			}
+		})
+	}
+}

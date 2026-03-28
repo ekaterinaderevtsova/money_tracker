@@ -69,3 +69,17 @@ func (mr *MockIExpenseRepositoryMockRecorder) GetWeeklyExpenses(ctx, week any) *
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetWeeklyExpenses", reflect.TypeOf((*MockIExpenseRepository)(nil).GetWeeklyExpenses), ctx, week)
 }
+
+// DeleteExpensesByDate mocks base method.
+func (m *MockIExpenseRepository) DeleteExpensesByDate(ctx context.Context, date string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteExpensesByDate", ctx, date)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteExpensesByDate indicates an expected call of DeleteExpensesByDate.
+func (mr *MockIExpenseRepositoryMockRecorder) DeleteExpensesByDate(ctx, date any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteExpensesByDate", reflect.TypeOf((*MockIExpenseRepository)(nil).DeleteExpensesByDate), ctx, date)
+}

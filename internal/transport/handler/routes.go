@@ -15,5 +15,6 @@ func (h *HTTPHandler) SetSpendingRoutes(router fiber.Router) {
 	{
 		expenseGroup.Get("/weekly", h.ExpenseHandler.GetWeeklyExpenses)
 		expenseGroup.Post("", h.ExpenseHandler.AddExpense)
+		expenseGroup.Delete("", h.ExpenseHandler.DeleteDayExpenses)
 	}
 }

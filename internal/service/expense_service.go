@@ -3,19 +3,24 @@ package service
 import (
 	"context"
 	"moneytracker/internal/domain"
-	"moneytracker/internal/repository"
 	"time"
 
 	"go.uber.org/zap"
 )
 
+type IExpenseRepository interface {
+	AddExpense(ctx context.Context, payload *domain.DailyExpense) error
+	GetWeeklyExpenses(ctx context.Context, week []string) (*domain.WeeklyExpense, error)
+	DeleteExpensesByDate(ctx context.Context, date string) error
+}
+
 type ExpenseService struct {
-	expenseRepository repository.IExpenseRepository
+	expenseRepository IExpenseRepository
 	logger            *zap.Logger
 }
 
 func NewExpenseService(
-	expenseRepository repository.IExpenseRepository,
+	expenseRepository IExpenseRepository,
 	logger *zap.Logger,
 ) *ExpenseService {
 	return &ExpenseService{
@@ -62,6 +67,20 @@ func (s *ExpenseService) GetWeeklyExpenses(ctx context.Context, date string) (*d
 	}
 
 	return weekExpenses, nil
+}
+
+func (s *ExpenseService) DeleteyExpensesByDate(ctx context.Context, date string) error {
+	err := s.expenseRepository.DeleteExpensesByDate(ctx, date)
+	if err != nil {
+		s.logger.Error("Error deleting expenses by date",
+			zap.Error(err),
+			zap.String("date", date),
+		)
+		return err
+	}
+
+	s.logger.Info("Expenses deleted", zap.String("date", date))
+	return nil
 }
 
 func (s *ExpenseService) getWeek(dateStr string) ([]string, error) {
