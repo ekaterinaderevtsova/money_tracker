@@ -13,8 +13,16 @@ func (h *HTTPHandler) SetSpendingRoutes(router fiber.Router) {
 	expenseGroup := router.Group("/expenses")
 	expenseGroup.Use(JWTMiddleware)
 	{
-		expenseGroup.Get("/weekly", h.ExpenseHandler.GetWeeklyExpenses)
 		expenseGroup.Post("", h.ExpenseHandler.AddExpense)
-		expenseGroup.Delete("", h.ExpenseHandler.DeleteDayExpenses)
+		expenseGroup.Get("/weekly/:date", h.ExpenseHandler.GetWeeklyExpenses)
+		expenseGroup.Put("/:uuid", h.ExpenseHandler.UpdateDailyExpense)
+		expenseGroup.Delete("/:uuid", h.ExpenseHandler.DeleteDailyExpense)
 	}
+
+	dailyExpensesGroup := expenseGroup.Group("/daily")
+	{
+		dailyExpensesGroup.Get("/:date", h.ExpenseHandler.GetDailyExpense)
+		dailyExpensesGroup.Delete("/:date", h.ExpenseHandler.DeleteDayExpenses)
+	}
+
 }

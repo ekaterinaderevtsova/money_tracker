@@ -126,9 +126,9 @@ func (s *TrackerTestSuite) startTestServer(ready chan<- bool) {
 		panic(fmt.Sprintf("error initializing logger: %v", err))
 	}
 	repo := repository.NewRepository(s.db)
-	service := service.NewService(repo, zapLogger)
+	service := service.NewService(repo)
 
-	handler := handler.NewHTTPHandler(ctx, service)
+	handler := handler.NewHTTPHandler(ctx, service, zapLogger)
 
 	app := fiber.New(fiber.Config{
 		DisableStartupMessage: true, // Reduce noise in tests

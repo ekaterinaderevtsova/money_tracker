@@ -1,8 +1,9 @@
 package domain
 
 type DailyExpense struct {
-	Date   string
-	Amount int32
+	ID     string `json:"id"`
+	Date   string `json:"date"`
+	Amount int32  `json:"amount"`
 }
 
 type WeeklyExpense struct {

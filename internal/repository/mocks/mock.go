@@ -83,3 +83,46 @@ func (mr *MockIExpenseRepositoryMockRecorder) DeleteExpensesByDate(ctx, date any
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteExpensesByDate", reflect.TypeOf((*MockIExpenseRepository)(nil).DeleteExpensesByDate), ctx, date)
 }
+
+// GetDailyExpense mocks base method.
+func (m *MockIExpenseRepository) GetDailyExpense(ctx context.Context, date string) ([]domain.DailyExpense, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetDailyExpense", ctx, date)
+	ret0, _ := ret[0].([]domain.DailyExpense)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetDailyExpense indicates an expected call of GetDailyExpense.
+func (mr *MockIExpenseRepositoryMockRecorder) GetDailyExpense(ctx, date any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDailyExpense", reflect.TypeOf((*MockIExpenseRepository)(nil).GetDailyExpense), ctx, date)
+}
+
+// UpdateDailyExpense mocks base method.
+func (m *MockIExpenseRepository) UpdateDailyExpense(ctx context.Context, uuid string, newAmount int32) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateDailyExpense", ctx, uuid, newAmount)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateDailyExpense indicates an expected call of UpdateDailyExpense.
+func (mr *MockIExpenseRepositoryMockRecorder) UpdateDailyExpense(ctx, uuid, newAmount any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateDailyExpense", reflect.TypeOf((*MockIExpenseRepository)(nil).UpdateDailyExpense), ctx, uuid, newAmount)
+}
+
+// DeleteDailyExpense mocks base method.
+func (m *MockIExpenseRepository) DeleteDailyExpense(ctx context.Context, uuid string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteDailyExpense", ctx, uuid)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteDailyExpense indicates an expected call of DeleteDailyExpense.
+func (mr *MockIExpenseRepositoryMockRecorder) DeleteDailyExpense(ctx, uuid any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteDailyExpense", reflect.TypeOf((*MockIExpenseRepository)(nil).DeleteDailyExpense), ctx, uuid)
+}

@@ -4,89 +4,92 @@ import (
 	"context"
 	"moneytracker/internal/domain"
 	"time"
-
-	"go.uber.org/zap"
 )
 
 type IExpenseRepository interface {
 	AddExpense(ctx context.Context, payload *domain.DailyExpense) error
 	GetWeeklyExpenses(ctx context.Context, week []string) (*domain.WeeklyExpense, error)
 	DeleteExpensesByDate(ctx context.Context, date string) error
+	GetDailyExpense(ctx context.Context, date string) ([]domain.DailyExpense, error)
+	UpdateDailyExpense(ctx context.Context, uuid string, newAmount int32) error
+	DeleteDailyExpense(ctx context.Context, uuid string) error
 }
 
 type ExpenseService struct {
 	expenseRepository IExpenseRepository
-	logger            *zap.Logger
 }
 
 func NewExpenseService(
 	expenseRepository IExpenseRepository,
-	logger *zap.Logger,
 ) *ExpenseService {
 	return &ExpenseService{
 		expenseRepository: expenseRepository,
-		logger:            logger,
 	}
 }
 
 func (s *ExpenseService) AddExpense(ctx context.Context, payload *domain.DailyExpense) error {
 	err := s.expenseRepository.AddExpense(ctx, payload)
 	if err != nil {
-		s.logger.Error("Error adding expense to db",
-			zap.Error(err),
-			zap.String("date", payload.Date),
-			zap.Int32("amount", payload.Amount),
-		)
+		// TODO: wrap error
 		return err
 	}
 
-	s.logger.Info("New expense added",
-		zap.String("date", payload.Date),
-		zap.Int32("amount", payload.Amount),
-	)
 	return nil
 }
 
 func (s *ExpenseService) GetWeeklyExpenses(ctx context.Context, date string) (*domain.WeeklyExpense, error) {
 	week, err := s.getWeek(date)
 	if err != nil {
-		s.logger.Error("Error getting week by date",
-			zap.Error(err),
-			zap.String("date", date),
-		)
 		return nil, err
 	}
 
 	weekExpenses, err := s.expenseRepository.GetWeeklyExpenses(ctx, week)
 	if err != nil {
-		s.logger.Error("Error getting week expenses",
-			zap.Error(err),
-			zap.String("date", date),
-		)
 		return nil, err
 	}
 
 	return weekExpenses, nil
 }
 
-func (s *ExpenseService) DeleteyExpensesByDate(ctx context.Context, date string) error {
+func (s *ExpenseService) DeleteExpensesByDate(ctx context.Context, date string) error {
 	err := s.expenseRepository.DeleteExpensesByDate(ctx, date)
 	if err != nil {
-		s.logger.Error("Error deleting expenses by date",
-			zap.Error(err),
-			zap.String("date", date),
-		)
 		return err
 	}
 
-	s.logger.Info("Expenses deleted", zap.String("date", date))
+	return nil
+}
+
+func (s *ExpenseService) GetDailyExpense(ctx context.Context, date string) ([]domain.DailyExpense, error) {
+	dailyExpenses, err := s.expenseRepository.GetDailyExpense(ctx, date)
+	if err != nil {
+		return nil, err
+	}
+
+	return dailyExpenses, nil
+}
+
+func (s *ExpenseService) UpdateDailyExpense(ctx context.Context, uuid string, newAmount int32) error {
+	err := s.expenseRepository.UpdateDailyExpense(ctx, uuid, newAmount)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *ExpenseService) DeleteDailyExpense(ctx context.Context, uuid string) error {
+	err := s.expenseRepository.DeleteDailyExpense(ctx, uuid)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func (s *ExpenseService) getWeek(dateStr string) ([]string, error) {
 	date, err := time.Parse("2006-01-02", dateStr)
 	if err != nil {
-		s.logger.Error("failed to parse date", zap.Error(err), zap.String("date", dateStr))
 		return nil, err
 	}
 

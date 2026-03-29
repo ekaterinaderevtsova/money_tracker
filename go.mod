@@ -1,6 +1,6 @@
 module moneytracker
 
-go 1.24.5
+go 1.26.1
 
 require (
 	github.com/caarlos0/env v3.5.0+incompatible

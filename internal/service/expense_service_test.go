@@ -22,20 +22,13 @@ func initTestLogger(t *testing.T) *zap.Logger {
 
 func TestAddSpending(t *testing.T) {
 	ctx := context.Background()
-	logger := initTestLogger(t)
 	ctrl := gomock.NewController(t)
 
-	defer func() {
-		if err := logger.Sync(); err != nil {
-			t.Logf("failed to sync logger: %v", err)
-		}
-	}()
 	defer ctrl.Finish()
 
 	mockExpenseRepo := mock_repository.NewMockIExpenseRepository(ctrl)
 	expenseServie := ExpenseService{
 		expenseRepository: mockExpenseRepo,
-		logger:            logger,
 	}
 
 	type mockBehavior func(r *mock_repository.MockIExpenseRepository)
@@ -79,20 +72,13 @@ func TestAddSpending(t *testing.T) {
 
 func TestGetWeekSpendings(t *testing.T) {
 	ctx := context.Background()
-	logger := initTestLogger(t)
 	ctrl := gomock.NewController(t)
 
-	defer func() {
-		if err := logger.Sync(); err != nil {
-			t.Logf("failed to sync logger: %v", err)
-		}
-	}()
 	defer ctrl.Finish()
 
 	mockExpenseRepo := mock_repository.NewMockIExpenseRepository(ctrl)
 	expenseServie := ExpenseService{
 		expenseRepository: mockExpenseRepo,
-		logger:            logger,
 	}
 
 	type mockBehavior func(r *mock_repository.MockIExpenseRepository)
@@ -160,20 +146,13 @@ func TestGetWeekSpendings(t *testing.T) {
 
 func TestDeleteExpensesByDate(t *testing.T) {
 	ctx := context.Background()
-	logger := initTestLogger(t)
 	ctrl := gomock.NewController(t)
 
-	defer func() {
-		if err := logger.Sync(); err != nil {
-			t.Logf("failed to sync logger: %v", err)
-		}
-	}()
 	defer ctrl.Finish()
 
 	mockExpenseRepo := mock_repository.NewMockIExpenseRepository(ctrl)
 	expenseService := ExpenseService{
 		expenseRepository: mockExpenseRepo,
-		logger:            logger,
 	}
 
 	type mockBehavior func(r *mock_repository.MockIExpenseRepository)
@@ -199,7 +178,7 @@ func TestDeleteExpensesByDate(t *testing.T) {
 			if tt.behavior != nil {
 				tt.behavior(mockExpenseRepo)
 			}
-			err := expenseService.DeleteyExpensesByDate(ctx, tt.date)
+			err := expenseService.DeleteExpensesByDate(ctx, tt.date)
 			if tt.expectedError == nil {
 				assert.NoError(t, err)
 			} else {

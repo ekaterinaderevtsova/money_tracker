@@ -1,8 +1,8 @@
 package httpdto
 
 type DailyExpense struct {
-	Date  string `json:"day"`
-	Amoun int32  `json:"sum"`
+	Date   string `json:"day"`
+	Amount int32  `json:"sum"`
 }
 
 type WeeklyExpense struct {

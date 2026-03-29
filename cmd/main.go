@@ -48,12 +48,12 @@ func main() {
 	defer cancel()
 
 	newRepository := repository.NewRepository(db)
-	newService := service.NewService(newRepository, zapLogger)
+	newService := service.NewService(newRepository)
 	if err != nil {
 		zapLogger.Fatal("Error creating service", zap.Error(err))
 	}
 
-	newHTTPHandler := httpHandler.NewHTTPHandler(ctx, newService)
+	newHTTPHandler := httpHandler.NewHTTPHandler(ctx, newService, zapLogger)
 
 	app := startHTTPServer(newHTTPHandler)
 

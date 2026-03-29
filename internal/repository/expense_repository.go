@@ -79,3 +79,54 @@ func (sr *ExpenseRepository) GetWeeklyExpenses(ctx context.Context, week []strin
 
 	return &weeklyExpenses, nil
 }
+
+func (sr *ExpenseRepository) GetDailyExpense(ctx context.Context, date string) ([]domain.DailyExpense, error) {
+	rows, err := sr.db.Query(ctx, `
+		SELECT uuid, sum
+		FROM spendings
+		WHERE date = $1
+		ORDER BY created_at;
+		`, date)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var expenses []domain.DailyExpense
+	for rows.Next() {
+		var e domain.DailyExpense
+		err := rows.Scan(&e.ID, &e.Amount)
+		if err != nil {
+			return nil, err
+		}
+		expenses = append(expenses, e)
+	}
+
+	return expenses, nil
+}
+
+func (sr *ExpenseRepository) UpdateDailyExpense(ctx context.Context, uuid string, newAmount int32) error {
+	_, err := sr.db.Exec(ctx, `
+		UPDATE spendings SET sum = $1
+		WHERE uuid = $2;
+	`, newAmount, uuid)
+
+	if err != nil {
+		return fmt.Errorf("failed to update spending: %w", err)
+	}
+
+	return nil
+}
+
+func (sr *ExpenseRepository) DeleteDailyExpense(ctx context.Context, uuid string) error {
+	_, err := sr.db.Exec(ctx, `
+		DELETE FROM spendings
+		WHERE uuid = $1;
+	`, uuid)
+
+	if err != nil {
+		return fmt.Errorf("failed to delete spending: %w", err)
+	}
+
+	return nil
+}
